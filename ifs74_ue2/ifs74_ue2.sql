@@ -41,3 +41,29 @@ END IF;
 INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id)
 VALUES (OLD.employee_id, employee_date, SYSDATE, OLD.job_id, OLD.department_id);
 END createJobHistoryTrigger;
+
+--2
+CREATE OR REPLACE TRIGGER programmerEmployeeTrigger
+BEFORE INSERT OR UPDATE OR DELETE ON employee
+FOR EACH ROW
+WHEN (OLD.job_id = 'IT_PROG' OR NEW.job_id = 'IT_PROG')
+BEGIN
+IF DELETING THEN
+    raise_application_error(20099, 'IT-Programmierer darf nicht entlassen werden');
+END IF;
+
+IF NEW.salary < 10000 THEN
+    NEW.salary := 10000;
+END IF;
+
+IF NEW.salary < OLD.salary THEN
+    NEW.salary := OLD.salary;
+END IF;
+
+IF NEW.job_id != OLD.job_id THEN
+    IF NEW.salary < (OLD.salary + 2000) THEN
+    NEW.salary := OLD.salary + 2000;
+END IF;
+END programmerEmployeeTrigger;
+
+
