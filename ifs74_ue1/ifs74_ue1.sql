@@ -1,30 +1,30 @@
 --1a
 CREATE OR REPLACE PROCEDURE createJob (
-new_job_id NUMBER,
-new_job_title VARCHAR,
+new_job_id VARCHAR2,
+new_job_title VARCHAR2,
 new_min_salary NUMBER, 
 new_max_salary NUMBER)
 AS
 jobnameException EXCEPTION;
 salaryException EXCEPTION;
 jobIdException EXCEPTION;
-jobs_titles VARCHAR;
+jobs_titles VARCHAR2(35);
 
 BEGIN
 IF NOT REGEXP_LIKE(new_job_id,'^[[:alnum:]]{2}_[[:alnum:]]{1,7}$') THEN
 RAISE jobIdException;
 END IF;
 BEGIN 
-SELECT job_title INTO jobs_titles FROM jobs WHERE job_title = new_job_title;
-RAISE jobnameException;
-EXCEPTION 
-WHEN NO_DATA_FOUND THEN
-NULL;
-WHEN TOO_MANY_ROWS THEN
-RAISE jobnameException;
+    SELECT job_title INTO jobs_titles FROM jobs WHERE job_title = new_job_title;
+    RAISE jobnameException;
+    EXCEPTION 
+    WHEN NO_DATA_FOUND THEN
+    RETURN;
+    WHEN TOO_MANY_ROWS THEN
+    RAISE jobnameException;
 END;
 IF new_max_salary < new_min_salary THEN
-RAISE salaryException;
+    RAISE salaryException;
 ELSE INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES (UPPER(new_job_id), new_job_title, new_min_salary, new_max_salary);
 END IF;
 
@@ -37,6 +37,8 @@ WHEN jobIdException THEN
 DBMS_OUTPUT.PUT_LINE('JobId does not match the requested format');
 END createJob;
 
+
+--Tests
 SELECT 'ok' FROM dual
 WHERE REGEXP_LIKE ('AD_PRES',
  '^[[:alnum:]]{2}_[[:alnum:]]{1,7}$');
@@ -52,6 +54,8 @@ IF REGEXP_LIKE ('ADD_PRES',
  DBMS_OUTPUT.PUT_LINE('Nicht ok');
  END IF;
 END;
+
+
 
 
 --b
@@ -158,7 +162,7 @@ END;
 
 --Tests
 
-
+spool 'C:\Users\johan\OneDrive\Documents\2025W_Studium\Datenbanken\UE\UE_solutions\ifs74_ue1'
 
 
 
