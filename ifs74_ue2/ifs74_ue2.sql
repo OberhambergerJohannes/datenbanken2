@@ -63,7 +63,44 @@ END IF;
 IF NEW.job_id != OLD.job_id THEN
     IF NEW.salary < (OLD.salary + 2000) THEN
     NEW.salary := OLD.salary + 2000;
+    END IF;
 END IF;
 END programmerEmployeeTrigger;
 
+--Tests
 
+
+--3
+ALTER TABLE departments ADD salary_sum NUMBER;
+
+UPDATE departments SET salary_sum = (SELECT SUM(employees.salary) FROM employees WHERE departments.department_id = employees.department_id);
+
+CREATE OR REPLACE TRIGGER salarySum
+BEFORE INSERT OR UPDATE OR DELETE ON employees
+FOR EACH ROW
+BEGIN
+    IF DELETING THEN
+        UPDATE departments SET salary_sum = salary_sum - OLD.salary
+        WHERE department_id = OLD.department_id;
+    END IF;
+    
+    IF INSERTING THEN
+        UPDATE departments set salary_sum = salary_sum + NEW.salary
+        WHERE department_id = NEW.department_id;
+    END IF;
+    
+    IF UPDATING THEN
+        IF OLD.department_id = NEW.department_id THEN
+        update departments SET salary_sum = salary_sum - OLD.salary + NEW.salary;
+        WHERE department_id = OLD.department_id;
+        ELSE
+        UPDATE departments SET salary_sum = salary_sum - OLD.salary
+        WHERE department_id = OLD.department_id;
+        UPDATE departments SET salary_sum = salary_sum + NEW.salary
+        WHERE department_id = NEW.department_id;
+    END IF;
+END salarySum;
+
+--Tests
+--ALTER TABLE
+--UPDATE TABLE
