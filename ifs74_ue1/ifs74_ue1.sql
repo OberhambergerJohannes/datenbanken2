@@ -8,8 +8,7 @@ AS
 jobnameException EXCEPTION;
 salaryException EXCEPTION;
 jobIdException EXCEPTION;
-jobs_titles_count NUMBER;
-
+job_titles_count NUMBER;
 BEGIN
 IF NOT REGEXP_LIKE(new_job_id,'^[[:alnum:]]{2}_[[:alnum:]]{1,7}$') THEN
     RAISE jobIdException;
