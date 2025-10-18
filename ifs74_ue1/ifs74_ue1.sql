@@ -51,13 +51,13 @@ IF REGEXP_LIKE ('ADD_PRES',
 END;
 
 --correct case
-createJob('FR_COOLBRO', 'Megacoolbro', 1000, 10000);
+EXEC createJob('FR_COOLBRO', 'Megacoolbro', 1000, 10000);
 --fail with lowercase jobtitle
-createJob('fr_coolbro', 'Coolbro', 1000, 10000);
+EXEC createJob('fr_coolbro', 'Coolbro', 1000, 10000);
 --fail with duplicate
-createJob('EN_COOLBRO', 'Megacoolbro', 1000, 10000);
+EXEC createJob('EN_COOLBRO', 'Megacoolbro', 1000, 10000);
 --fail with minsalary > maxsalary
-createJob('FR_COOLBRO', 'Megacoolbro', 10000, 1000);
+EXEC createJob('FR_COOLBRO', 'Megacoolbro', 10000, 1000);
 
 --b
 CREATE OR REPLACE PROCEDURE createJobHistory (
@@ -104,16 +104,15 @@ END createJobHistory;
 
 --tests
 --correct case
-createJobHistory (1, SYSDATE - 10, SYSDATE + 10, 'FR_COOLBRO', 1);
+EXEC createJobHistory (1, SYSDATE - 10, SYSDATE + 10, 'FR_COOLBRO', 1);
 --fail with employeeMissing
-createJobHistory (100000, SYSDATE - 10, SYSDATE + 10, 'FR_COOLBRO', 1);
+EXEC createJobHistory (100000, SYSDATE - 10, SYSDATE + 10, 'FR_COOLBRO', 1);
 --fail with jobIdMissingException
-createJobHistory (1, SYSDATE - 10, SYSDATE + 10, 'BR_MYCOOL', 1);
+EXEC createJobHistory (1, SYSDATE - 10, SYSDATE + 10, 'BR_MYCOOL', 1);
 --fail with departmentIdMissingException
-createJobHistory (1, SYSDATE - 10, SYSDATE + 10, 'FR_COOLBRO', 10000);
+EXEC createJobHistory (1, SYSDATE - 10, SYSDATE + 10, 'FR_COOLBRO', 10000);
 
 --2a
--
 CREATE OR REPLACE PROCEDURE checkSalary 
 (child_employee_id NUMBER)
 AS
@@ -140,9 +139,9 @@ END;
 END checkSalary;
 /
 --correct case
-checkSalary(1);
+EXEC checkSalary(1);
 --NO DATA FOUND exception
-checkSalary(10000000);
+EXEC checkSalary(10000000);
 
 --2b
 CREATE OR REPLACE PROCEDURE check_all_salaries
@@ -160,6 +159,6 @@ BEGIN
 END;
 
 --Tests
-check_all_salaries();
+EXEC check_all_salaries();
 
 
