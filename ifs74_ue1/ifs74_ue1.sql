@@ -14,7 +14,7 @@ IF NOT REGEXP_LIKE(new_job_id,'^[[:alnum:]]{2}_[[:alnum:]]{1,7}$') THEN
     RAISE jobIdException;
 END IF;
 
-SELECT COUNT(job_id) INTO jobs_titles_count FROM jobs WHERE UPPER(job_title) = UPPER(new_job_title);    
+SELECT COUNT(job_id) INTO job_titles_count FROM jobs WHERE UPPER(job_title) = UPPER(new_job_title);    
 IF job_titles_count >= 1 THEN
     RAISE jobnameException;
 END IF;
