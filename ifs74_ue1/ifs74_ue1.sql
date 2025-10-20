@@ -65,28 +65,26 @@ CREATE OR REPLACE PROCEDURE append_job_history (
   not_existing_employee 		    EXCEPTION;
   not_existing_job_id  			    EXCEPTION;
   not_existing_department_id    	EXCEPTION;
-  department_id_must_have_a_value   EXCEPTION;
   num_of_employees                  NUMBER;
   num_of_jobs                       NUMBER;
   num_of_departments                NUMBER;
 BEGIN
-    SELECT COUNT(h_employee_id) INTO num_of_employees
+    SELECT COUNT(employee_id) INTO num_of_employees
     FROM employees
     WHERE h_employee_id = employee_id;
     IF num_of_employees = 0 THEN
         RAISE not_existing_employee;
     END IF;
     
-    SELECT COUNT(h_job_id) INTO num_of_jobs
+    SELECT COUNT(job_id) INTO num_of_jobs
     FROM jobs
     WHERE UPPER(h_job_id) = UPPER(job_id);
     IF num_of_jobs = 0 THEN
         RAISE not_existing_job_id;
     END IF;
     
-    -- ?
     IF h_department_id IS NOT NULL THEN
-        SELECT COUNT(h_department_id) INTO num_of_departments
+        SELECT COUNT(department_id) INTO num_of_departments
         FROM departments
         WHERE h_department_id = department_id;
         IF num_of_departments = 0 THEN
@@ -97,13 +95,7 @@ BEGIN
     INSERT INTO job_history(employee_id, start_date, end_date, job_id, department_id)
     VALUES (h_employee_id, h_start_date, h_end_date, UPPER(h_job_id), h_department_id);
     
-    DBMS_OUTPUT.PUT_LINE(
-    'Entry in job_history successfully inserted: ' ||
-    ' Employee ID=' || h_employee_id ||
-    ', Start Date=' || TO_CHAR(h_start_date, 'YYYY-MM-DD') ||
-    ', End Date=' || TO_CHAR(h_end_date, 'YYYY-MM-DD') ||
-    ', Job ID=' || UPPER(h_job_id) ||
-    ', Department ID=' || h_department_id);
+    DBMS_OUTPUT.PUT_LINE('Entry in job_history successfully inserted');
     
 EXCEPTION
     WHEN not_existing_employee THEN
@@ -116,7 +108,7 @@ END append_job_history;
 /
 
 -- tests
-begin
+BEGIN
     -- ok
     append_job_history(100, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 60);
     -- not existing employee
@@ -127,140 +119,84 @@ begin
     append_job_history(100, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 900);
     -- append with null department
     append_job_history(103, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', NULL);
-end;
-/
-
--- 2a
-CREATE OR REPLACE PROCEDURE check_employee_salayry (
-    p_employee      IN NUMBER
-) AS
-  not_existing_employee		    EXCEPTION;
-  
-  num_of_employees              NUMBER;
-  p_manager_id              NUMBER;
-  p_emp_sal                 NUMBER;
-  p_mgr_sal                 NUMBER;
-BEGIN
-    -- check existense of employee
-    SELECT COUNT(p_employee) INTO num_of_employees
-    FROM employees
-    WHERE p_employee = employee_id;
-    IF num_of_employees = 0 THEN
-        RAISE not_existing_employee;
-    END IF;
-    
-    -- get emp salary and manager_id
-    SELECT salary, manager_id INTO p_emp_sal, p_manager_id
-    FROM employees
-    WHERE p_employee = employee_id;
-    
-    -- has manager?
-    IF p_manager_id IS NULL THEN
-        DBMS_OUTPUT.PUT_LINE('Employee has no manager ' || p_employee_id);
-        RETURN;
-    END IF;
-    
-    -- get manager sal
-    SELECT salary INTO p_mgr_sal
-    FROM employees
-    WHERE p_employee = employee_id;
-    
-    -- compare and update
-    IF p_emp_sal >= p_mgr_sal THEN
-        UPDATE employees
-           SET salary = p_emp_sal * 1.10
-         WHERE employee_id = p_manager_id;
-        DBMS_OUTPUT.PUT_LINE(
-            'Manager ' || p_manager_id || ' salary updated to ' || TO_CHAR(p_emp_sal * 1.10)
-        );
-    END IF;
-    
-    -- recursive call
-    check_employee_salayry(p_manager_id);
-    
-EXCEPTION
-    WHEN not_existing_employee THEN
-        DBMS_OUTPUT.PUT_LINE('Employee ID does not exist in database!');
 END;
 /
 
-
 -- 2a
 CREATE OR REPLACE PROCEDURE check_employee_salary (
-    p_employee      IN NUMBER
+    child_employee              IN NUMBER
 ) AS
-  not_existing_employee		    EXCEPTION;
+  not_existing_employee		EXCEPTION;
+  not_existing_manager      EXCEPTION;
   
-  num_of_employees              NUMBER;
-  p_manager_id              NUMBER;
-  p_emp_sal                 NUMBER;
-  p_mgr_sal                 NUMBER;
+  num_of_employees          NUMBER;
+  parent_manager_id              NUMBER;
+  employee_salary                 NUMBER;
+  manager_salary                 NUMBER;
 BEGIN
     -- check existense of employee
-    SELECT COUNT(p_employee) INTO num_of_employees
+    SELECT COUNT(child_employee) INTO num_of_employees
     FROM employees
-    WHERE p_employee = employee_id;
+    WHERE child_employee = employee_id;
     IF num_of_employees = 0 THEN
         RAISE not_existing_employee;
     END IF;
     
     -- get emp salary and manager_id
-    SELECT salary, manager_id INTO p_emp_sal, p_manager_id
+    SELECT salary, manager_id INTO employee_salary, parent_manager_id
     FROM employees
-    WHERE p_employee = employee_id;
+    WHERE child_employee = employee_id;
     
-    -- has manager?
-    IF p_manager_id IS NULL THEN
-        DBMS_OUTPUT.PUT_LINE('Employee:' || p_employee || ' has no manager!');
-        RETURN;
+    -- has manager
+    IF parent_manager_id IS NULL THEN
+        RAISE not_existing_manager;
     END IF;
     
     -- get manager sal
-    SELECT salary INTO p_mgr_sal
+    SELECT salary INTO manager_salary
     FROM employees
-    WHERE p_manager_id = employee_id;
+    WHERE employee_id = parent_manager_id;
     
     -- compare and update
-    IF p_emp_sal >= p_mgr_sal THEN
+    IF employee_salary >= manager_salary THEN
         UPDATE employees
-        SET salary = p_emp_sal * 1.10
-        WHERE employee_id = p_manager_id;
-        DBMS_OUTPUT.PUT_LINE(
-            'Manager ' || p_manager_id || ' salary updated to ' || TO_CHAR(p_emp_sal * 1.10)
-        );
-    ELSE
-        DBMS_OUTPUT.PUT_LINE('Nothing was updated!');
+           SET salary = employee_salary * 1.1
+         WHERE employee_id = parent_manager_id;
+        DBMS_OUTPUT.PUT_LINE('salary succesfully updated');
     END IF;
+    
 EXCEPTION
     WHEN not_existing_employee THEN
         DBMS_OUTPUT.PUT_LINE('Employee ID does not exist in database!');
+    WHEN not_existing_manager THEN
+        DBMS_OUTPUT.PUT_LINE('Manager ID does not exist in database!');
 END;
 /
 
 -- test
-begin
+BEGIN
     check_employee_salary(200);
-end;
+END;
 /
 
 -- 2b
 CREATE OR REPLACE PROCEDURE check_sal_of_all_emp AS
-  CURSOR c1 is
+  CURSOR c1 IS
   SELECT employee_id FROM employees FOR UPDATE;
   c1_employee_id employees.employee_id%TYPE;
 BEGIN
     OPEN c1;
-    loop
+    LOOP
         FETCH c1 into c1_employee_id;
-        EXIT WHEN c1%notfound;
+        EXIT WHEN c1%NOTFOUND;
         check_employee_salary(c1_employee_id);
-    end loop;
+    END LOOP;
     CLOSE c1;
 END;
 /
 
 -- test
-begin
+BEGIN
     check_sal_of_all_emp();
-end;
+END;
 /
