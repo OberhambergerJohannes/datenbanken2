@@ -49,22 +49,14 @@ END createJobHistoryTrigger;
 /
 
 --Tests 1b
-BEGIN
-    -- ok
-    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (100, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 60);
-    -- not existing employee
-    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (900, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 60);
-    -- not existing job
-    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (100, DATE '2020-01-01', DATE '2021-01-01', 'Invalid', 60);
-    -- not existing department
-    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (100, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 900);
-    -- append with null department
-    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (103, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', NULL);
-    --check values
-    select * from job_history;
-END;
-/
+INSERT INTO employees VALUES (401, 'Cool', 'Cool', 'NICE', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'IT_PROG', 100000, NULL, NULL, 90);
+--change job_id
+UPDATE employees SET job_id = 'AD_PRES' WHERE employee_id = 401;
+--change department_id
+UPDATE employees SET department_id = 10 WHERE employee_id = 401;
+SELECT * FROM job_history;
 
+    
 --2
 CREATE OR REPLACE TRIGGER programmerEmployeeTrigger
 BEFORE INSERT OR UPDATE OR DELETE ON employee
@@ -158,6 +150,7 @@ SELECT * FROM departments;
 
 UPDATE employees SET department_id = 10 where department_id = 20;
 SELECT * FROM departments; 
+
 
 
 
