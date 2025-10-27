@@ -16,15 +16,19 @@ ADD CONSTRAINT salaryUniqueConstraint
 CHECK(min_salary < max_salary);
 
 --Tests 1a
---correct
-INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('FR_COOLBRO', 'Megacoolbro', 1000, 10000);
-SELECT * from jobs;
---fail with lowercase jobtitle
-INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('fr_coolbro', 'Coolbro', 1000, 10000);
---fail with duplicate
-INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('EN_COOLBRO', 'Megacoolbro', 1000, 10000);
---fail with minsalary > maxsalary
-INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('FR_COOLBRO', 'Megacoolbro', 10000, 1000);
+BEGIN
+    --correct
+    INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('FR_COOLBRO', 'Megacoolbro', 1000, 10000);
+    --fail with lowercase jobtitle
+    INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('fr_coolbro', 'Coolbro', 1000, 10000);
+    --fail with duplicate
+    INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('EN_COOLBRO', 'Megacoolbro', 1000, 10000);
+    --fail with minsalary > maxsalary
+    INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('FR_COOLBRO', 'Megacoolbro', 10000, 1000);
+    --check values:
+    SELECT * from jobs;
+END;
+/
 
 --1b
 CREATE OR REPLACE TRIGGER createJobHistoryTrigger
@@ -43,6 +47,24 @@ INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_i
 VALUES (OLD.employee_id, employee_date, SYSDATE, OLD.job_id, OLD.department_id);
 END createJobHistoryTrigger;
 /
+
+--Tests 1b
+BEGIN
+    -- ok
+    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (100, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 60);
+    -- not existing employee
+    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (900, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 60);
+    -- not existing job
+    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (100, DATE '2020-01-01', DATE '2021-01-01', 'Invalid', 60);
+    -- not existing department
+    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (100, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 900);
+    -- append with null department
+    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (103, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', NULL);
+    --check values
+    select * from job_history;
+END;
+/
+
 --2
 CREATE OR REPLACE TRIGGER programmerEmployeeTrigger
 BEFORE INSERT OR UPDATE OR DELETE ON employee
@@ -103,8 +125,20 @@ BEGIN
     END IF;
 END salarySum;
 /
+
 --Tests
---ALTER TABLE
+SELECT * FROM departments;
+--INSERT
+INSERT INTO employees VALUES (111, 'Cool', 'Cool', 'NICE', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'IT_PROG', 24000, NULL, NULL, 90);
+SELECT * FROM departments;
+--DELETE
+DELETE FROM employees WHERE employee_id = 111;
+SELECT * FROM departments;
 --UPDATE TABLE
+UPDATE employees SET salary = 10000000 where employee_id = 103;
+SELECT * FROM departments;
+
+UPDATE employees SET department_id = 10 where department_id = 20;
+SELECT * FROM departments; 
 
 
