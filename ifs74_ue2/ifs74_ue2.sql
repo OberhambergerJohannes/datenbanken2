@@ -18,6 +18,7 @@ CHECK(min_salary < max_salary);
 --Tests 1a
 --correct
 INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('FR_COOLBRO', 'Megacoolbro', 1000, 10000);
+SELECT * from jobs;
 --fail with lowercase jobtitle
 INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('fr_coolbro', 'Coolbro', 1000, 10000);
 --fail with duplicate
@@ -31,7 +32,7 @@ AFTER UPDATE OF job_id, department_id on employees
 FOR EACH ROW
 WHEN (NEW.job_id != OLD.job_id OR NEW.department_id != OLD.department_id)
 DECLARE
-    employee_date DATE;
+    employee_date employees.employee_date%TYPE;
 BEGIN
     SELECT MAX(end_date) INTO employee_date FROM job_history WHERE employee_id = OLD.employee_id;
 IF
@@ -41,7 +42,7 @@ END IF;
 INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id)
 VALUES (OLD.employee_id, employee_date, SYSDATE, OLD.job_id, OLD.department_id);
 END createJobHistoryTrigger;
-
+/
 --2
 CREATE OR REPLACE TRIGGER programmerEmployeeTrigger
 BEFORE INSERT OR UPDATE OR DELETE ON employee
@@ -52,20 +53,21 @@ IF DELETING THEN
     raise_application_error(20099, 'IT-Programmierer darf nicht entlassen werden');
 END IF;
 
-IF NEW.salary < 10000 THEN
-    NEW.salary := 10000;
+IF :NEW.salary < 10000 THEN
+    :NEW.salary := 10000;
 END IF;
 
-IF NEW.salary < OLD.salary THEN
-    NEW.salary := OLD.salary;
+IF :NEW.salary < :OLD.salary THEN
+    :NEW.salary := :OLD.salary;
 END IF;
 
-IF NEW.job_id != OLD.job_id THEN
-    IF NEW.salary < (OLD.salary + 2000) THEN
-    NEW.salary := OLD.salary + 2000;
+IF :NEW.job_id != :OLD.job_id THEN
+    IF :NEW.salary < (:OLD.salary + 2000) THEN
+    :NEW.salary := :OLD.salary + 2000;
     END IF;
 END IF;
 END programmerEmployeeTrigger;
+/
 
 --Tests
 
@@ -80,27 +82,28 @@ BEFORE INSERT OR UPDATE OR DELETE ON employees
 FOR EACH ROW
 BEGIN
     IF DELETING THEN
-        UPDATE departments SET salary_sum = salary_sum - OLD.salary
-        WHERE department_id = OLD.department_id;
+        UPDATE departments SET salary_sum = salary_sum - :OLD.salary
+        WHERE department_id = :OLD.department_id;
     END IF;
     
     IF INSERTING THEN
-        UPDATE departments set salary_sum = salary_sum + NEW.salary
-        WHERE department_id = NEW.department_id;
+        UPDATE departments set salary_sum = salary_sum + :NEW.salary
+        WHERE department_id = :NEW.department_id;
     END IF;
     
     IF UPDATING THEN
-        IF OLD.department_id = NEW.department_id THEN
-        update departments SET salary_sum = salary_sum - OLD.salary + NEW.salary;
-        WHERE department_id = OLD.department_id;
+        IF :OLD.department_id = :NEW.department_id THEN
+        update departments SET salary_sum = salary_sum - :OLD.salary + :NEW.salary;
+        WHERE department_id = :OLD.department_id;
         ELSE
-        UPDATE departments SET salary_sum = salary_sum - OLD.salary
-        WHERE department_id = OLD.department_id;
-        UPDATE departments SET salary_sum = salary_sum + NEW.salary
-        WHERE department_id = NEW.department_id;
+        UPDATE departments SET salary_sum = salary_sum - :OLD.salary
+        WHERE department_id = :OLD.department_id;
+        UPDATE departments SET salary_sum = salary_sum + :NEW.salary
+        WHERE department_id = :NEW.department_id;
     END IF;
 END salarySum;
-
+/
 --Tests
 --ALTER TABLE
 --UPDATE TABLE
+
