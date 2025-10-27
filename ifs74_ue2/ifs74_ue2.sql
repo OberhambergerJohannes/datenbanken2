@@ -92,7 +92,25 @@ END programmerEmployeeTrigger;
 /
 
 --Tests
-
+--INSERT with low salary
+INSERT INTO employees VALUES (113, 'Cool', 'Cool', 'NICE', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'IT_PROG', 100, NULL, NULL, 90);
+--INSERT with high salary
+INSERT INTO employees VALUES (112, 'Cool', 'Cool', 'NICE', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'IT_PROG', 100000, NULL, NULL, 90);
+----UPDATE lower salary
+UPDATE employees SET salary = 100 WHERE employee_id = 113;
+--check
+SELECT * FROM employees;
+--try delete with error
+DELETE FROM employees where employee_id = 113;
+--change jobid default salary change;
+UPDATE employees SET job_id = 'AD_PRES' WHERE employee_id = 113;
+--change jobid higher change 
+UPDATE employees SET job_id = 'AD_PRES', salary = 200000 WHERE employee_id = 112;
+----UPDATE lower salary
+UPDATE employees SET salary = 100 WHERE employee_id = 113;
+INSERT INTO employees VALUES (114, 'Cool', 'Cool', 'NICE', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'AD_PRES', 10, NULL, NULL, 90);
+UPDATE employees SET job_id = 'IT_PROG';
+SELECT * FROM employees;
 
 --3
 ALTER TABLE departments ADD salary_sum NUMBER;
@@ -140,5 +158,6 @@ SELECT * FROM departments;
 
 UPDATE employees SET department_id = 10 where department_id = 20;
 SELECT * FROM departments; 
+
 
 
