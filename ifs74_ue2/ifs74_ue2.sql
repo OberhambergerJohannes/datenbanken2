@@ -87,7 +87,7 @@ BEGIN
     END IF;
     
     IF INSERTING THEN
-        UPDATE departments set salary_sum = salary_sum + :NEW.salary
+        UPDATE departments SET salary_sum = salary_sum + :NEW.salary
         WHERE department_id = :NEW.department_id;
     END IF;
     
@@ -106,4 +106,5 @@ END salarySum;
 --Tests
 --ALTER TABLE
 --UPDATE TABLE
+
 
