@@ -1,106 +1,173 @@
 --1a
+ALTER TABLE jobs 
+ADD CONSTRAINT jobIdFormatConstraint
+CHECK(REGEXP_LIKE(job_id,'^[[:alnum:]]{2}_[[:alnum:]]{1,7}$'));
+
 ALTER TABLE jobs
-ADD CONSTRAINT jobIDFormatConstraint CHECK (REGEXP_LIKE(job_id,'^[[:alnum:]]{2}_[[:alnum:]]{1,7}$');
-ADD CONSTRAINT uniqueJobTitelConstraint UNIQUE (job_title);
-ADD CONSTRAINT salaryCheckConstraint CHECK (min_salary <= max_salary);
-ADD CONSTRAINT jobIdIsUpperConstraint CHECK (job_id = UPPER(job_id));
+ADD CONSTRAINT jobIdIsUpperConstraint
+CHECK(job_id = UPPER(job_id));
+
+ALTER TABLE jobs
+ADD CONSTRAINT jobnameUniqueConstraint
+UNIQUE (job_title);
+
+ALTER TABLE jobs
+ADD CONSTRAINT salaryUniqueConstraint
+CHECK(min_salary < max_salary);
 /
 
--- tests
+--Tests 1a
+--correct
+INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('FR_COOLBRO', 'Megacoolbro', 1000, 10000);
+--fail with lowercase jobtitle
+INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('fr_coolbro', 'Coolbro', 1000, 10000);
+--fail with duplicate
+INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('EN_COOLBRO', 'Megacoolbro', 1000, 10000);
+--fail with minsalary > maxsalary
+INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('FR_COOLBRO', 'Megacoolbro', 10000, 1000);
 
-
--- 1b  done in a very stupid way :)
+-- 1b
 CREATE OR REPLACE TRIGGER createJobHistoryTrigger
-BEFORE UPDATE OF job_id, department_id, employee_id ON employees
+AFTER UPDATE OF job_id, department_id on employees
 FOR EACH ROW
-WHEN (OLD.job_id != NEW.job_id OR OLD.department_id != NEW.department_id)
+WHEN (NEW.job_id != OLD.job_id OR NEW.department_id != OLD.department_id)
 DECLARE
-	num_of_employees NUMBER;
-	new_start_date DATE;
+    employee_date DATE;
 BEGIN
-	SELECT COUNT(employee_id) INTO num_of_employees
-	FROM job_history
-	WHERE employee_id = :OLD.employee_id;
+    SELECT MAX(end_date) INTO employee_date FROM job_history WHERE employee_id = :OLD.employee_id;
+IF
+    employee_date IS NULL THEN
+    employee_date := :OLD.hire_date;
+END IF;
+INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id)
+VALUES (:OLD.employee_id, employee_date, SYSDATE, :OLD.job_id, :OLD.department_id);
+END createJobHistoryTrigger;
+/
 
-	IF num_of_employees < 1 THEN
-		new_start_date := :OLD.hire_date;
-	ELSE
-		SELECT MAX(end_date)
-    		INTO new_start_date
-    		FROM job_history
-   		WHERE employee_id = :OLD.employee_id;
-	END IF; INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (:OLD.employee_id, new_start_date, SYSDATE, :OLD.job_id, :OLD.department_id); END; END createJobHistoryTrigger; /
+--Tests 1b
+BEGIN
+    -- ok
+    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (100, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 60);
+    -- not existing employee
+    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (900, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 60);
+    -- not existing job
+    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (100, DATE '2020-01-01', DATE '2021-01-01', 'Invalid', 60);
+    -- not existing department
+    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (100, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 900);
+    -- append with null department
+    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (103, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', NULL);
+    --check values
+    select * from job_history;
+END;
+/
 
 --2
 CREATE OR REPLACE TRIGGER programmerEmployeeTrigger
-BEFORE UPDATE OR INSERT OR DELET ON employees
+BEFORE UPDATE OR INSERT OR DELETE ON employees
 FOR EACH ROW
 WHEN (OLD.job_id = 'IT_PROG' OR NEW.job_id  != 'IT_PROG') 
 DECLARE
 BEGIN
     IF DELETING THEN
-        RAISE raise_application_error(20999, ‘IT-Programmierer dürfen nicht entlassen werden’);
+        raise_application_error(20099, 'IT-Programmierer duerfen nicht entlassen werden');
     END IF;
 
     IF :NEW.salary < 10000 THEN
-        :NEW.salary = 10000;
+        :NEW.salary := 10000;
     END IF;
 
     IF :NEW.salary < :OLD.salary THEN
-        :NEW.salary = :OLD.salary;
+        :NEW.salary := :OLD.salary;
     END IF;
 
     IF :NEW.job_id != 'IT_PROG' AND (:NEW.salary - :OLD.salary) < 2000 THEN
        :NEW.salary := :OLD.salary + 2000;
     END IF;
-END;
 END programmerEmployeeTrigger;
+/
+
+--2 Tests
+--INSERT with low salary
+INSERT INTO employees VALUES (301, 'Cool', 'Cool', 'NICE', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'IT_PROG', 100, NULL, NULL, 90);
+--INSERT with high salary
+INSERT INTO employees VALUES (302, 'Cool', 'Cool', 'VERNICE', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'IT_PROG', 100000, NULL, NULL, 90);
+----UPDATE lower salary
+UPDATE employees SET salary = 100 WHERE employee_id = 301;
+--check
+SELECT * FROM employees
+WHERE employee_id IN (301,302,304);
+
+--try delete with error
+DELETE FROM employees where employee_id = 301;
+--change jobid default salary change;
+UPDATE employees SET job_id = 'AD_PRES' WHERE employee_id = 301;
+--change jobid higher change 
+UPDATE employees SET job_id = 'AD_PRES', salary = 200000 WHERE employee_id = 302;
+----UPDATE lower salary
+UPDATE employees SET salary = 100 WHERE employee_id = 301;
+INSERT INTO employees VALUES (304, 'Cool', 'Cool', 'NICE L', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'AD_PRES', 10, NULL, NULL, 90);
+UPDATE employees SET job_id = 'IT_PROG' WHERE employee_id IN  (301,302,304);
+
+SELECT * FROM employees
+WHERE employee_id IN (301,302,304);
 /
 
 --3
 ALTER TABLE departments
 ADD salary_sum NUMBER;
 UPDATE departments d
-SET slary_sum = (
+SET salary_sum = (
     SELECT SUM(NVL(e.salary,0))
     FROM employees e
     WHERE d.department_id = e.department_id);
 /
+
 CREATE OR REPLACE TRIGGER salarySum
-BEFORE UPDATE OR INSERT OR DELET ON employees
+BEFORE UPDATE OR INSERT OR DELETE ON employees
 FOR EACH ROW
-WHEN (OLD.salary  != NEW.salary OR OLD.department_id  != NEW.department_id)
 DECLARE
 BEGIN
     IF UPDATING THEN
         IF :OLD.department_id = :NEW.department_id THEN
             UPDATE departments d
-            SET slary_sum = salary_sum + (:NEW.salary - :OLD.salary); 
+            SET salary_sum = NVL(salary_sum, 0) + (:NEW.salary - :OLD.salary)
             WHERE d.department_id = :OLD.department_id;
         ELSE 
             UPDATE departments d
-            SET slary_sum = salary_sum - :OLD.salary;
-            WHERE d.department_id = :OLD.department_id;
+            SET salary_sum = NVL(salary_sum,0) - :OLD.salary
+            WHERE NVL(d.department_id,0) = NVL(:OLD.department_id,0);
 
             UPDATE departments d
-            SET slary_sum = salary_sum + :NEW.salary; 
+            SET salary_sum = NVL(salary_sum,0) + :NEW.salary 
             WHERE d.department_id = :NEW.department_id;
         END IF;
     END IF;
 
     IF INSERTING THEN
         UPDATE departments d
-        SET slary_sum = salary_sum + :NEW.salary; 
+        SET salary_sum = NVL(salary_sum,0) + :NEW.salary
         WHERE d.department_id = :NEW.department_id;
-    END IF;  done in a very stupid way :)
+    END IF;
 
     IF DELETING THEN
         UPDATE departments d
-        SET slary_sum = salary_sum - :OLD.salary;
+        SET salary_sum = NVL(salary_sum,0) - :OLD.salary
         WHERE d.department_id = :OLD.department_id;
     END IF;
-END;
 END salarySum;
 /
 
---tests
+--Tests
+SELECT * FROM departments;
+--INSERT
+INSERT INTO employees VALUES (419, 'Cool', 'Cool', 'VERYS', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'AD_PRES', 24000, NULL, NULL, 150);
+SELECT * FROM departments;
+--DELETE
+DELETE FROM employees WHERE employee_id = 419;
+SELECT * FROM departments;
+--UPDATE TABLE
+UPDATE employees SET salary = 100000 where employee_id = 418;
+SELECT * FROM departments;
+
+UPDATE employees SET department_id = 10 where department_id = 20;
+SELECT * FROM departments; 
