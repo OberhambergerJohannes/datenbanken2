@@ -17,6 +17,7 @@ CHECK(min_salary < max_salary);
 /
 
 --Tests 1a
+SELECT * FROM jobs;
 --correct
 INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('FR_COOLBRO', 'Megacoolbro', 1000, 10000);
 --fail with lowercase jobtitle
@@ -25,7 +26,11 @@ INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('fr_coolbro
 INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('EN_COOLBRO', 'Megacoolbro', 1000, 10000);
 --fail with minsalary > maxsalary
 INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('FR_COOLBRO', 'Megacoolbro', 10000, 1000);
+--fail with wrong format
+INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('INVALID', 'Megacoolbro', 10000, 1000);
 
+SELECT * FROM jobs;
+/
 -- 1b
 CREATE OR REPLACE TRIGGER createJobHistoryTrigger
 AFTER UPDATE OF job_id, department_id on employees
@@ -45,31 +50,24 @@ END createJobHistoryTrigger;
 /
 
 --Tests 1b
-BEGIN
-    -- ok
-    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (100, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 60);
-    -- not existing employee
-    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (900, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 60);
-    -- not existing job
-    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (100, DATE '2020-01-01', DATE '2021-01-01', 'Invalid', 60);
-    -- not existing department
-    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (100, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 900);
-    -- append with null department
-    INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES (103, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', NULL);
-    --check values
-    select * from job_history;
-END;
+SELECT * FROM job_history;
+INSERT INTO employees VALUES (401, 'Cool', 'Cool', 'NICES', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'IT_PROG', 100000, NULL, NULL, 90);
+--change job_id
+UPDATE employees SET job_id = 'AD_PRES' WHERE employee_id = 401;
+--change department_id
+UPDATE employees SET department_id = 10 WHERE employee_id = 401;
+SELECT * FROM job_history;
 /
 
 --2
 CREATE OR REPLACE TRIGGER programmerEmployeeTrigger
 BEFORE UPDATE OR INSERT OR DELETE ON employees
 FOR EACH ROW
-WHEN (OLD.job_id = 'IT_PROG' OR NEW.job_id  != 'IT_PROG') 
+WHEN (OLD.job_id = 'IT_PROG' OR NEW.job_id  = 'IT_PROG') 
 DECLARE
 BEGIN
     IF DELETING THEN
-        raise_application_error(20099, 'IT-Programmierer duerfen nicht entlassen werden');
+        raise_application_error(-20099, 'IT-Programmierer duerfen nicht entlassen werden');
     END IF;
 
     IF :NEW.salary < 10000 THEN
@@ -88,28 +86,39 @@ END programmerEmployeeTrigger;
 
 --2 Tests
 --INSERT with low salary
-INSERT INTO employees VALUES (301, 'Cool', 'Cool', 'NICE', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'IT_PROG', 100, NULL, NULL, 90);
+INSERT INTO employees VALUES (603, 'Cool', 'Cool', 'NIVLCE', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'IT_PROG', 100, NULL, NULL, 90);
 --INSERT with high salary
-INSERT INTO employees VALUES (302, 'Cool', 'Cool', 'VERNICE', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'IT_PROG', 100000, NULL, NULL, 90);
+INSERT INTO employees VALUES (604, 'Cool', 'Cool', 'VERNABICE', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'IT_PROG', 100000, NULL, NULL, 90);
 ----UPDATE lower salary
-UPDATE employees SET salary = 100 WHERE employee_id = 301;
+UPDATE employees SET salary = 100 WHERE employee_id = 603;
 --check
+
 SELECT * FROM employees
-WHERE employee_id IN (301,302,304);
+WHERE employee_id IN (603,604);
 
 --try delete with error
-DELETE FROM employees where employee_id = 301;
+DELETE FROM employees where employee_id = 603;
 --change jobid default salary change;
-UPDATE employees SET job_id = 'AD_PRES' WHERE employee_id = 301;
+UPDATE employees SET job_id = 'AD_PRES' WHERE employee_id = 603;
 --change jobid higher change 
-UPDATE employees SET job_id = 'AD_PRES', salary = 200000 WHERE employee_id = 302;
+UPDATE employees SET job_id = 'AD_PRES', salary = 200000 WHERE employee_id = 604;
+
+--check
+SELECT * FROM employees
+WHERE employee_id IN (603,604);
+
 ----UPDATE lower salary
-UPDATE employees SET salary = 100 WHERE employee_id = 301;
-INSERT INTO employees VALUES (304, 'Cool', 'Cool', 'NICE L', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'AD_PRES', 10, NULL, NULL, 90);
-UPDATE employees SET job_id = 'IT_PROG' WHERE employee_id IN  (301,302,304);
+UPDATE employees SET salary = 100 WHERE employee_id = 603;
+
+--check
+SELECT * FROM employees
+WHERE employee_id IN (603,604);
+
+INSERT INTO employees VALUES (605, 'Cool', 'Cool', 'NIABCE L', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'AD_PRES', 10, NULL, NULL, 90);
+UPDATE employees SET job_id = 'IT_PROG' WHERE employee_id IN  (603,604,605);
 
 SELECT * FROM employees
-WHERE employee_id IN (301,302,304);
+WHERE employee_id IN (603,604,605);
 /
 
 --3
@@ -160,14 +169,15 @@ END salarySum;
 --Tests
 SELECT * FROM departments;
 --INSERT
-INSERT INTO employees VALUES (419, 'Cool', 'Cool', 'VERYS', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'AD_PRES', 24000, NULL, NULL, 150);
+INSERT INTO employees VALUES (619, 'Cool', 'Cool', 'OVERYS', '515.123.4567', TO_DATE('17-06-2003', 'dd-MM-yyyy'), 'AD_PRES', 24000, NULL, NULL, 210);
 SELECT * FROM departments;
 --DELETE
-DELETE FROM employees WHERE employee_id = 419;
+DELETE FROM employees WHERE employee_id = 619;
 SELECT * FROM departments;
+
 --UPDATE TABLE
 UPDATE employees SET salary = 100000 where employee_id = 418;
 SELECT * FROM departments;
 
-UPDATE employees SET department_id = 10 where department_id = 20;
-SELECT * FROM departments; 
+UPDATE employees SET department_id = 20 where department_id = 10;
+SELECT * FROM departments;
