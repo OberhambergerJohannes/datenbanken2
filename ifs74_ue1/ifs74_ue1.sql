@@ -1,164 +1,202 @@
---1a
-CREATE OR REPLACE PROCEDURE createJob (
-new_job_id VARCHAR2,
-new_job_title VARCHAR2,
-new_min_salary NUMBER, 
-new_max_salary NUMBER)
-AS
-jobnameException EXCEPTION;
-salaryException EXCEPTION;
-jobIdException EXCEPTION;
-job_titles_count NUMBER;
+-- 1a
+CREATE OR REPLACE PROCEDURE create_job_moritz(
+    new_job_id      IN VARCHAR2,
+    new_job_title   IN VARCHAR2,
+    new_min_sal     IN NUMBER,
+    new_max_sal     IN NUMBER
+) AS
+  wrong_job_id_format 			    EXCEPTION;
+  existing_job_title  			    EXCEPTION;
+  max_sale_smaller_than_min_sale	EXCEPTION;
+  num_of_same_title			        NUMBER;
 BEGIN
-IF NOT REGEXP_LIKE(new_job_id,'^[[:alnum:]]{2}_[[:alnum:]]{1,7}$') THEN
-    RAISE jobIdException;
-END IF;
-
-SELECT COUNT(job_id) INTO job_titles_count FROM jobs WHERE UPPER(job_title) = UPPER(new_job_title);    
-IF job_titles_count >= 1 THEN
-    RAISE jobnameException;
-END IF;
-
-IF new_max_salary < new_min_salary THEN
-    RAISE salaryException;
-ELSE INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES (UPPER(new_job_id), new_job_title, new_min_salary, new_max_salary);
-END IF;
+    IF NOT REGEXP_LIKE(new_job_id,'^[[:alnum:]]{2}_[[:alnum:]]{1,7}$') THEN
+        RAISE wrong_job_id_format;
+    END IF;
+    
+    SELECT COUNT(job_title) INTO num_of_same_title
+    FROM jobs
+    WHERE UPPER(new_job_title) = UPPER(job_title);
+    IF num_of_same_title >= 1 THEN
+        RAISE existing_job_title;
+    END IF;
+    
+    IF new_max_sal < new_min_sal THEN
+        RAISE max_sale_smaller_than_min_sale;
+    END IF;
+    
+    INSERT INTO jobs(job_id, job_title, min_salary, max_salary)
+    VALUES (UPPER(new_job_id), new_job_title, new_min_sal, new_max_sal);
+    
+    DBMS_OUTPUT.PUT_LINE('Job successfully inserted: ' || new_job_title);
 
 EXCEPTION
-WHEN jobnameException THEN
-DBMS_OUTPUT.PUT_LINE('Jobname already in database');
-WHEN salaryException THEN
-DBMS_OUTPUT.PUT_LINE('Max salary is lower than min salary');
-WHEN jobIdException THEN
-DBMS_OUTPUT.PUT_LINE('JobId does not match the requested format');
-END createJob;
+    WHEN wrong_job_id_format THEN
+        DBMS_OUTPUT.PUT_LINE('Job ID does not match the expected format!');
+    WHEN existing_job_title THEN
+        DBMS_OUTPUT.PUT_LINE('Job Title already exists in the table!');
+    WHEN max_sale_smaller_than_min_sale THEN
+        DBMS_OUTPUT.PUT_LINE('The maximum salary cannot be smaller than the minimum salary!');
+END create_job_moritz;
+/
 
---Tests
-SELECT 'ok' FROM dual
-WHERE REGEXP_LIKE ('AD_PRES',
- '^[[:alnum:]]{2}_[[:alnum:]]{1,7}$');
-SELECT 'ok' FROM dual
-WHERE REGEXP_LIKE ('ADD_PRES',
- '^[[:alnum:]]{2}_[[:alnum:]]{1,7}$');
-
+-- tests
+-- SET SERVEROUTPUT ON;
 BEGIN
-IF REGEXP_LIKE ('ADD_PRES',
- '^[[:alnum:]]{2}_[[:alnum:]]{1,7}$') THEN
- DBMS_OUTPUT.PUT_LINE('ok');
- ELSE
- DBMS_OUTPUT.PUT_LINE('Nicht ok');
- END IF;
+    --ok
+    create_job_moritz('IT_GOAT', 'Wenninger', 3000, 6000);
+    --exists
+    create_job_moritz('FR_COOLBRO', 'Megacoolbro', 4000, 8000);
+    --invalid id
+    create_job_moritz('XXINVALID', 'Invalid', 2000, 4000);
+    -- min > max
+    create_job_moritz('MK_MGR', 'NeedMoreMoney', 5000, 3000);
 END;
+/
 
---correct case
-EXEC createJob('FR_COOLBRO', 'Megacoolbro', 1000, 10000);
---fail with lowercase jobtitle
-EXEC createJob('fr_coolbro', 'Coolbro', 1000, 10000);
---fail with duplicate
-EXEC createJob('EN_COOLBRO', 'Megacoolbro', 1000, 10000);
---fail with minsalary > maxsalary
-EXEC createJob('FR_COOLBRO', 'Megacoolbro', 10000, 1000);
-
---b
-CREATE OR REPLACE PROCEDURE createJobHistory (
-new_employee_id NUMBER,
-new_start_date DATE,
-new_end_date DATE,
-new_job_id  VARCHAR2,
-new_department_id NUMBER)
-AS
-employeeIdMissingException EXCEPTION;
-jobIdMissingException EXCEPTION;
-departmentIdMissingException EXCEPTION;
-employees_count NUMBER;
-jobs_count NUMBER;
-department_count NUMBER;
-
+-- 1b what if tuple already exists in job_history
+CREATE OR REPLACE PROCEDURE append_job_history (
+    h_employee_id      IN NUMBER,
+    h_start_date        IN DATE,
+    h_end_date          IN DATE,
+    h_job_id           IN VARCHAR2,
+    h_department_id        IN NUMBER
+) AS
+  not_existing_employee 		    EXCEPTION;
+  not_existing_job_id  			    EXCEPTION;
+  not_existing_department_id    	EXCEPTION;
+  num_of_employees                  NUMBER;
+  num_of_jobs                       NUMBER;
+  num_of_departments                NUMBER;
 BEGIN
-SELECT COUNT(employee_id) INTO employees_count FROM employees WHERE new_employee_id = employee_id;
-IF employees_count = 0 THEN
-    RAISE employeeIdMissingException;
-END IF;
-
-BEGIN
-SELECT COUNT(job_id) INTO jobs_count FROM jobs WHERE new_job_id = job_id;
-IF jobs_count = 0 THEN
-    RAISE jobIdMissingException;
-END IF;
-
-IF new_department_id IS NOT NULL THEN
-BEGIN
-SELECT COUNT(department_id) INTO department_count FROM departments WHERE new_department_id = department_id;
-IF department_count = 0 THEN
-    RAISE departmentIdMissingException;
-END IF;
-
-EXCEPTION
-WHEN employeeIdMissingException THEN
-DBMS_OUTPUT.PUT_LINE('Employee is not in database');
-WHEN jobIdMissingException THEN
-DBMS_OUTPUT.PUT_LINE('Job is not in database');
-WHEN departmentIdMissingException THEN
-DBMS_OUTPUT.PUT_LINE('Department is not in database');
-END createJobHistory;
-
---tests
---correct case
-EXEC createJobHistory (1, SYSDATE - 10, SYSDATE + 10, 'FR_COOLBRO', 1);
---fail with employeeMissing
-EXEC createJobHistory (100000, SYSDATE - 10, SYSDATE + 10, 'FR_COOLBRO', 1);
---fail with jobIdMissingException
-EXEC createJobHistory (1, SYSDATE - 10, SYSDATE + 10, 'BR_MYCOOL', 1);
---fail with departmentIdMissingException
-EXEC createJobHistory (1, SYSDATE - 10, SYSDATE + 10, 'FR_COOLBRO', 10000);
-
---2a
-CREATE OR REPLACE PROCEDURE checkSalary 
-(child_employee_id NUMBER)
-AS
-child_employee_salary NUMBER;
-parent_manager_id NUMBER;
-parent_manager_salary NUMBER;
-BEGIN 
-    SELECT salary, manager_id INTO child_employee_salary, parent_manager_id FROM employees WHERE employee_id = child_employee_id;
+    SELECT COUNT(employee_id) INTO num_of_employees
+    FROM employees
+    WHERE h_employee_id = employee_id;
+    IF num_of_employees = 0 THEN
+        RAISE not_existing_employee;
+    END IF;
     
-    IF parent_manager_id IS NOT NULL THEN
-        SELECT salary INTO parent_manager_salary FROM employees
-        WHERE employee_id = parent_manager_id;
+    SELECT COUNT(job_id) INTO num_of_jobs
+    FROM jobs
+    WHERE UPPER(h_job_id) = UPPER(job_id);
+    IF num_of_jobs = 0 THEN
+        RAISE not_existing_job_id;
+    END IF;
     
-        IF child_employee_salary >= parent_manager_salary THEN
-            UPDATE employees SET salary = child_employee_salary * 1.1
-            WHERE employee_id = parent_manager_id;
+    IF h_department_id IS NOT NULL THEN
+        SELECT COUNT(department_id) INTO num_of_departments
+        FROM departments
+        WHERE h_department_id = department_id;
+        IF num_of_departments = 0 THEN
+            RAISE not_existing_department_id;
         END IF;
     END IF;
     
+    INSERT INTO job_history(employee_id, start_date, end_date, job_id, department_id)
+    VALUES (h_employee_id, h_start_date, h_end_date, UPPER(h_job_id), h_department_id);
+    
+    DBMS_OUTPUT.PUT_LINE('Entry in job_history successfully inserted');
+    
 EXCEPTION
-WHEN NO_DATA_FOUND THEN
-    DBMS_OUTPUT.PUT_LINE('The employee with the given id does not exist');
-END;
-END checkSalary;
+    WHEN not_existing_employee THEN
+        DBMS_OUTPUT.PUT_LINE('Employee ID does not exist in database!');
+    WHEN not_existing_job_id THEN
+        DBMS_OUTPUT.PUT_LINE('Job ID does not exist in database!');
+    WHEN not_existing_department_id THEN
+        DBMS_OUTPUT.PUT_LINE('Department ID does not exist in database!');
+END append_job_history;
 /
---correct case
-EXEC checkSalary(1);
---NO DATA FOUND exception
-EXEC checkSalary(10000000);
 
---2b
-CREATE OR REPLACE PROCEDURE check_all_salaries
-AS
-    CURSOR c1 IS SELECT employee_id FROM employees FOR UPDATE;
-    c1_rec_employee_id employee_id%TYPE;
+-- tests
+BEGIN
+    -- ok
+    append_job_history(100, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 60);
+    -- not existing employee
+    append_job_history(900, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 60);
+    -- not existing job
+    append_job_history(100, DATE '2020-01-01', DATE '2021-01-01', 'Invalid', 60);
+    -- not existing department
+    append_job_history(100, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', 900);
+    -- append with null department
+    append_job_history(103, DATE '2020-01-01', DATE '2021-01-01', 'IT_GOAT', NULL);
+END;
+/
+
+-- 2a
+CREATE OR REPLACE PROCEDURE check_employee_salary (
+    child_employee              IN NUMBER
+) AS
+  not_existing_employee		EXCEPTION;
+  not_existing_manager      EXCEPTION;
+  
+  num_of_employees          NUMBER;
+  parent_manager_id              NUMBER;
+  employee_salary                 NUMBER;
+  manager_salary                 NUMBER;
+BEGIN
+    -- check existense of employee
+    SELECT COUNT(child_employee) INTO num_of_employees
+    FROM employees
+    WHERE child_employee = employee_id;
+    IF num_of_employees = 0 THEN
+        RAISE not_existing_employee;
+    END IF;
+    
+    -- get emp salary and manager_id
+    SELECT salary, manager_id INTO employee_salary, parent_manager_id
+    FROM employees
+    WHERE child_employee = employee_id;
+    
+    -- has manager
+    IF parent_manager_id IS NULL THEN
+        RAISE not_existing_manager;
+    END IF;
+    
+    -- get manager sal
+    SELECT salary INTO manager_salary
+    FROM employees
+    WHERE employee_id = parent_manager_id;
+    
+    -- compare and update
+    IF employee_salary >= manager_salary THEN
+        UPDATE employees
+           SET salary = employee_salary * 1.1
+         WHERE employee_id = parent_manager_id;
+        DBMS_OUTPUT.PUT_LINE('salary succesfully updated');
+    END IF;
+    
+EXCEPTION
+    WHEN not_existing_employee THEN
+        DBMS_OUTPUT.PUT_LINE('Employee ID does not exist in database!');
+    WHEN not_existing_manager THEN
+        DBMS_OUTPUT.PUT_LINE('Manager ID does not exist in database!');
+END;
+/
+
+-- test
+BEGIN
+    check_employee_salary(200);
+END;
+/
+
+-- 2b
+CREATE OR REPLACE PROCEDURE check_sal_of_all_emp AS
+  CURSOR c1 IS
+  SELECT employee_id FROM employees FOR UPDATE;
+  c1_employee_id employees.employee_id%TYPE;
 BEGIN
     OPEN c1;
     LOOP
-        FETCH c1 INTO c1_rec_employee_id;
+        FETCH c1 into c1_employee_id;
         EXIT WHEN c1%NOTFOUND;
-        checkSalary(c1_rec_employee_id);
+        check_employee_salary(c1_employee_id);
     END LOOP;
     CLOSE c1;
 END;
+/
 
---Tests
-EXEC check_all_salaries();
-
-
+-- test
+BEGIN
+    check_sal_of_all_emp();
+END;
+/
