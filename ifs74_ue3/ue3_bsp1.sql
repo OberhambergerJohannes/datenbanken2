@@ -1,3 +1,4 @@
+--b
 CREATE OR REPLACE TYPE Ort_Typ AS OBJECT (
     OrtId INTEGER,
     Postleitzahl INTEGER,
@@ -9,7 +10,7 @@ CREATE OR REPLACE TYPE Immobilien_Typ AS OBJECT (
     ImmobilienId INTEGER,
     Bezeichnung VARCHAR2(100),
     Beschreibung VARCHAR2(1000),
-    Ort Ort_Typ
+    Ort REF Ort_Typ
 )NOT FINAL NOT INSTANTIABLE;
 /
 
@@ -24,6 +25,12 @@ CREATE OR REPLACE TYPE Zimmer_Typ AS OBJECT (
 CREATE OR REPLACE TYPE Zimmer_NESTED_TABLE_TYPE AS TABLE OF Zimmer_Typ;
 /
 
+CREATE OR REPLACE TYPE Grundstücke_Typ UNDER Immobilien_Typ (
+    Größe INTEGER,
+    Lage VARCHAR2(50)
+) NOT FINAL INSTANTIABLE;
+/
+
 CREATE OR REPLACE TYPE Gebäude_Typ UNDER Immobilien_Typ (
     ZimmerPositionen Zimmer_NESTED_TABLE_TYPE,
     Auf_Grundstück REF Grundstücke_Typ
@@ -31,13 +38,6 @@ CREATE OR REPLACE TYPE Gebäude_Typ UNDER Immobilien_Typ (
 /
 
 CREATE OR REPLACE TYPE Gebäude_NESTED_TABLE_TYPE AS TABLE OF Gebäude_Typ;
-/
-
-
-CREATE OR REPLACE TYPE Grundstücke_Typ UNDER Immobilien_Typ (
-    Größe INTEGER,
-    Lage VARCHAR2(50)
-) NOT FINAL INSTANTIABLE;
 /
 
 ALTER TYPE Grundstücke_Typ
@@ -75,3 +75,78 @@ CREATE TABLE Immobilien_Tab OF Immobilien_Typ (
 CREATE TABLE Makler_Tab OF Makler_Typ (
     MaklerId PRIMARY KEY
 );
+
+--c
+INSERT INTO Ort_Tab VALUES (
+    Ort_Typ(1, 4040, 'Helms Klamm')
+);
+
+INSERT INTO Makler_Tab VALUES (
+    Makler_Typ(1, 'Karl', 'Klammer', TO_DATE('2000-01-01', 'YYYY-MM-DD'), TO_DATE('2025-11-11', 'YYYY-MM-DD'))
+);
+
+INSERT INTO Immobilien_Tab VALUES (
+    Waldgrundstücke_Typ(
+        1,
+        'Eisengard',
+        'They are taking the Hobbits to Eisengard',
+        (SELECT REF(o) FROM Ort_Tab o WHERE o.OrtId = 1),
+        7000,
+        'Cool',
+        'Tannenwald',
+        Gebäude_NESTED_TABLE_TYPE(
+            Gebäude_Typ(
+                1,
+                'Bilbos Hobbithütte',
+                'Kein Ort für wilde Parties',
+                (SELECT REF(o) FROM Ort_Tab o WHERE o.OrtId = 1),
+                Zimmer_NESTED_TABLE_TYPE(
+                    Zimmer_Typ(1, 50, 'Küch-Wohnzimmer', 'Tisch, Sessel'),
+                    Zimmer_Typ(2, 12, 'Schlafzimmer', 'Bett, Kleiderschrank'),
+                    Zimmer_Typ(3, 18, 'Garderobe', 'Garderobenständer')
+                ),
+                (SELECT TREAT(REF(i) AS REF Grundstücke_Typ)
+                 FROM immobilien_tab i WHERE i.immobilienid = 1)
+            )
+        )
+    )
+);
+
+INSERT INTO Immobilien_Tab VALUES (
+    Seegrundstücke_Typ(
+        2,
+        'Benkos Privatvilla',
+        'Villa eines ehemaligen Kakaoherstellers',
+        (SELECT REF(o) FROM Ort_Tab o WHERE o.OrtId = 1),
+        5000,
+        'Richtig cooler Seezugang für Reiche',
+        1000,
+        Gebäude_NESTED_TABLE_TYPE(
+            Gebäude_Typ(
+                2,
+                'Benkos Ultravilla',
+                'Gehört der Mutter',
+                (SELECT REF(o) FROM Ort_Tab o WHERE o.OrtId = 1),
+                Zimmer_NESTED_TABLE_TYPE(
+                    Zimmer_Typ(4, 100012, 'Küch-Wohnzimmer', 'Butler, Guccimesser'),
+                    Zimmer_Typ(5, 67, 'Abstellkammer', 'Gucci-Abstellregal'),
+                    Zimmer_Typ(6, 100000, 'Benkos Kinderzimmer', 'Ultramega-Guccibett'),
+                    Zimmer_Typ(7, 10000, 'Rooftop Skyview Pool', 'Ultramega-Guccipool')
+                ),
+                (SELECT REF(i) FROM Immobilien_Tab i WHERE i.ImmobilienId = 2)
+            )
+        )
+    )
+);
+
+
+DROP TYPE Seegrundstücke_Typ FORCE;
+DROP TYPE Waldgrundstücke_Typ FORCE;
+DROP TYPE Grundstücke_Typ FORCE;
+DROP TYPE Gebäude_NESTED_TABLE_TYPE FORCE;
+DROP TYPE Gebäude_Typ FORCE;
+DROP TYPE Zimmer_NESTED_TABLE_TYPE FORCE;
+DROP TYPE Zimmer_Typ FORCE;
+DROP TYPE Immobilien_Typ FORCE;
+DROP TYPE Ort_Typ FORCE;
+DROP TYPE Makler_Typ FORCE;
