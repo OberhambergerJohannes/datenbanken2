@@ -139,3 +139,27 @@ INSERT INTO Immobilien_Tab VALUES (
         1000
     )
 );
+
+CREATE TABLE Fahrzeug (
+FahrzeugNr NUMBER(4) PRIMARY KEY,
+Gewicht NUMBER(6));
+
+CREATE TABLE Auto (
+FahrzeugNr NUMBER(4) PRIMARY KEY,
+MaxGeschwindigkeit NUMBER(6),
+FOREIGN KEY (FahrzeugNr)
+REFERENCES Fahrzeug);
+
+CREATE TABLE Fahrrad (
+FahrzeugNr NUMBER(4) PRIMARY KEY,
+Rahmenhoehe NUMBER(6),
+FOREIGN KEY (FahrzeugNr)
+REFERENCES Fahrzeug);
+
+CREATE TABLE EBike (
+FahrzeugNr NUMBER(4) PRIMARY KEY,
+MaxReichweite NUMBER(6),
+FOREIGN KEY (FahrzeugNr)
+REFERENCES Fahrrad);
+
+
