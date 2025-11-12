@@ -40,3 +40,6 @@ Table IMMOBILIEN_TAB created.
 
 Table MAKLER_TAB created.
 
+1 row inserted.
+
+1 row inserted.
