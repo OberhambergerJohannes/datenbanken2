@@ -93,7 +93,6 @@ INSERT INTO Immobilien_Tab VALUES (
         (SELECT REF(o) FROM Ort_Tab o WHERE o.OrtId = 1),
         7000,
         'Cool',
-        'Tannenwald',
         Gebäude_NESTED_TABLE_TYPE(
             Gebäude_Typ(
                 1,
@@ -108,7 +107,8 @@ INSERT INTO Immobilien_Tab VALUES (
                 (SELECT TREAT(REF(i) AS REF Grundstücke_Typ)
                  FROM immobilien_tab i WHERE i.immobilienid = 1)
             )
-        )
+        ),
+        'Tannenwald'
     )
 );
 
@@ -120,7 +120,6 @@ INSERT INTO Immobilien_Tab VALUES (
         (SELECT REF(o) FROM Ort_Tab o WHERE o.OrtId = 1),
         5000,
         'Richtig cooler Seezugang für Reiche',
-        1000,
         Gebäude_NESTED_TABLE_TYPE(
             Gebäude_Typ(
                 2,
@@ -133,20 +132,10 @@ INSERT INTO Immobilien_Tab VALUES (
                     Zimmer_Typ(6, 100000, 'Benkos Kinderzimmer', 'Ultramega-Guccibett'),
                     Zimmer_Typ(7, 10000, 'Rooftop Skyview Pool', 'Ultramega-Guccipool')
                 ),
-                (SELECT REF(i) FROM Immobilien_Tab i WHERE i.ImmobilienId = 2)
+                (SELECT TREAT(REF(i) AS REF Grundstücke_Typ)
+                 FROM immobilien_tab i WHERE i.immobilienid = 2)
             )
-        )
+        ),
+        1000
     )
 );
-
-
-DROP TYPE Seegrundstücke_Typ FORCE;
-DROP TYPE Waldgrundstücke_Typ FORCE;
-DROP TYPE Grundstücke_Typ FORCE;
-DROP TYPE Gebäude_NESTED_TABLE_TYPE FORCE;
-DROP TYPE Gebäude_Typ FORCE;
-DROP TYPE Zimmer_NESTED_TABLE_TYPE FORCE;
-DROP TYPE Zimmer_Typ FORCE;
-DROP TYPE Immobilien_Typ FORCE;
-DROP TYPE Ort_Typ FORCE;
-DROP TYPE Makler_Typ FORCE;
