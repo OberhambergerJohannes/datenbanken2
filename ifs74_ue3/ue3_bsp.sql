@@ -140,6 +140,7 @@ INSERT INTO Immobilien_Tab VALUES (
     )
 );
 
+--2
 CREATE TABLE Fahrzeug (
 FahrzeugNr NUMBER(4) PRIMARY KEY,
 Gewicht NUMBER(6));
@@ -162,4 +163,47 @@ MaxReichweite NUMBER(6),
 FOREIGN KEY (FahrzeugNr)
 REFERENCES Fahrrad);
 
+--a
+CREATE OR REPLACE TYPE Fahrzeug_Typ AS OBJECT (
+    FahrzeugNr NUMBER(4),
+    Gewicht NUMBER(6)
+) NOT FINAL;
+/
 
+CREATE OR REPLACE TYPE Auto_Typ UNDER Fahrzeug_Typ(
+    MaxGeschwindigkeit NUMBER(6)
+);
+/
+
+CREATE OR REPLACE TYPE EBike_Typ UNDER Fahrzeug_Typ(
+    MaxReichweite NUMBER(6)
+);
+/
+
+CREATE TABLE Fahrzeug_Tab OF Fahrzeug_Typ (
+    FahrzeugNr PRIMARY KEY
+)
+/
+
+
+INSERT INTO Fahrzeug_Tab VALUES (Auto_Typ(0, 1700, 220));
+INSERT INTO Fahrzeug_Tab VALUES (Auto_Typ(1, 1500, 200));
+INSERT INTO Fahrzeug_Tab VALUES (EBike_Typ(2, 15, 52)); 
+INSERT INTO Fahrzeug_Tab VALUES (Fahrzeug_Typ(3, 1000));
+INSERT INTO Fahrzeug_Tab VALUES (EBike_Typ(4, 20, 56));
+
+SELECT VALUE(f) FROM Fahrzeug_Tab f;
+SELECT REF(f) FROM Fahrzeug_Tab f WHERE VALUE(f) IS OF (ONLY Auto_Typ);
+
+SELECT VALUE(f).FahrzeugNr, VALUE(f).Gewicht, TREAT(VALUE(f) AS EBike_Typ).MaxReichweite FROM Fahrzeug_Tab f
+WHERE VALUE(f) IS OF (ONLY EBike_Typ);
+
+SELECT VALUE(f) FROM Fahrzeug_Tab f WHERE VALUE(f) IS OF (ONLY Fahrzeug_Typ);
+
+
+/*
+DROP TYPE Fahrzeug_Typ FORCE;
+DROP TYPE EBike_Typ FORCE;
+DROP TYPE Auto_Typ FORCE;
+DROP TYPE Fahrzeug_Typ FORCE;
+DROP TABLE Fahrzeug_Tab;*/
