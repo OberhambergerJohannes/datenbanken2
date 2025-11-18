@@ -90,23 +90,12 @@ INSERT INTO Ort_Tab VALUES (
     Ort_Typ(1, 4040, 'Helms Klamm')
 );
 
-
-DECLARE
-    gebäude_ref REF Gebäude_Typ;
-    ort_ref REF Ort_Typ;
-    grundstück_ref REF Grundstücke_Typ;
-BEGIN
-    SELECT REF(o) INTO ort_ref
-    FROM ORT_TAB o 
-    WHERE o.ORTID = 1;
-
-    -- create building
-    INSERT INTO Immobilien_Tab VALUES (
+INSERT INTO Immobilien_Tab VALUES (
         Gebäude_Typ(
-            1,
+            7,
             'Bilbos Hobbithütte',
             'Kein Ort für wilde Parties',
-            ort_ref,
+            (SELECT REF(o) FROM ORT_TAB o WHERE o.ORTID = 1),
             Zimmer_Nested_Table_Typ(
                 Zimmer_Typ(1, 50, 'Küch-Wohnzimmer', 'Tisch, Sessel'),
                 Zimmer_Typ(2, 12, 'Schlafzimmer', 'Bett, Kleiderschrank'),
@@ -114,29 +103,23 @@ BEGIN
             ),
             NULL  -- ref will be added later
         )
-    );
+);
 
 
-    SELECT TREAT(REF(gebäude) AS REF Gebäude_Typ) INTO gebäude_ref
-    FROM Immobilien_Tab gebäude
-    WHERE gebäude.ImmobilienId = 1;
-
-    INSERT INTO Immobilien_Tab VALUES (
+INSERT INTO Immobilien_Tab VALUES (
         WALDGRUNDSTÜCKE_TYP(
-            2,
+            8,
             'Eisengard',
             'They are taking the Hobbits to Eisengard',
-            ort_ref,
+            (SELECT REF(o) FROM ORT_TAB o WHERE o.ORTID = 1),
             7000,
             'coole Lage',
-            Gebäude_REF_Nested_Table_Typ(gebäude_ref),
+                        Gebäude_REF_Nested_Table_Typ((SELECT TREAT(REF(gebäude) AS REF Gebäude_Typ)
+            FROM Immobilien_Tab gebäude
+            WHERE gebäude.ImmobilienId = 7)),
             'Tannenwald'
         )
-    );
-
-    SELECT TREAT(REF(grundstück) AS REF Grundstücke_Typ) INTO grundstück_ref
-    FROM Immobilien_Tab grundstück
-    WHERE grundstück.ImmobilienId = 2; 
+);
 
     UPDATE Immobilien_Tab tab
     SET VALUE(tab) = Gebäude_Typ(
@@ -145,112 +128,74 @@ BEGIN
         tab.Beschreibung,
         tab.Ort,
         TREAT(VALUE(tab) AS Gebäude_Typ).ZimmerPositionen,
-        grundstück_ref
+        (SELECT TREAT(REF(grundstück) AS REF Grundstücke_Typ)
+     FROM Immobilien_Tab grundstück
+     WHERE grundstück.ImmobilienId = 8)
     )
-    WHERE tab.ImmobilienId = 1;
-END;
-/
-
--- Benkos Privatvilla
-DECLARE
-    gebäude_ref REF Gebäude_Typ;
-    ort_ref REF Ort_Typ;
-    grundstück_ref REF Grundstücke_Typ;
-BEGIN
-    SELECT REF(o) INTO ort_ref
-    FROM ORT_TAB o 
-    WHERE o.ORTID = 1;
-
-    -- create building
-    INSERT INTO Immobilien_Tab VALUES (
-        Gebäude_Typ(
-            3,
-            'Benkos Ultravilla',
-            'Gehört der Mutter',
-            ort_ref,
-            Zimmer_Nested_Table_Typ(
-                Zimmer_Typ(4, 100012, 'Küch-Wohnzimmer', 'Butler, Guccimesser'),
-                Zimmer_Typ(5, 67, 'Abstellkammer', 'Gucci-Abstellregal'),
-                Zimmer_Typ(6, 100000, 'Benkos Kinderzimmer', 'Ultramega-Guccibett'),
-                Zimmer_Typ(7, 10000, 'Rooftop Skyview Pool', 'Ultramega-Guccipool')
-            ),
-            NULL  -- ref will be added later
-        )
-    );
+WHERE tab.ImmobilienId = 7;
 
 
-    SELECT TREAT(REF(gebäude) AS REF Gebäude_Typ) INTO gebäude_ref
-    FROM Immobilien_Tab gebäude
-    WHERE gebäude.ImmobilienId = 3;
+INSERT INTO Immobilien_Tab VALUES (
+       Gebäude_Typ(
+           5,
+           'Benkos Ultravilla',
+           'Gehört der Mutter',
+           (SELECT REF(o) FROM ORT_TAB o WHERE o.ORTID = 1),
+           Zimmer_Nested_Table_Typ(
+               Zimmer_Typ(4, 100012, 'Küch-Wohnzimmer', 'Butler, Guccimesser'),
+               Zimmer_Typ(5, 67, 'Abstellkammer', 'Gucci-Abstellregal'),
+               Zimmer_Typ(6, 100000, 'Benkos Kinderzimmer', 'Ultramega-Guccibett'),
+               Zimmer_Typ(7, 10000, 'Rooftop Skyview Pool', 'Ultramega-Guccipool')
+           ),
+           NULL
+       )
+);
 
-    INSERT INTO Immobilien_Tab VALUES (
+INSERT INTO Immobilien_Tab VALUES (
         WALDGRUNDSTÜCKE_TYP(
-            4,
+            6,
             'Benkos Privatvilla',
             'Villa eines ehemaligen Kakaoherstellers',
-            ort_ref,
+            (SELECT REF(o) FROM ORT_TAB o WHERE o.ORTID = 1),
             5000,
             'Richtig cooler Seezugang für Reiche',
-            Gebäude_REF_Nested_Table_Typ(gebäude_ref),
+            Gebäude_REF_Nested_Table_Typ((SELECT TREAT(REF(gebäude) AS REF Gebäude_Typ)
+            FROM Immobilien_Tab gebäude
+            WHERE gebäude.ImmobilienId = 3)),
             1000
         )
-    );
-
-    SELECT TREAT(REF(grundstück) AS REF Grundstücke_Typ) INTO grundstück_ref
-    FROM Immobilien_Tab grundstück
-    WHERE grundstück.ImmobilienId = 4; 
-
-    UPDATE Immobilien_Tab tab
-    SET VALUE(tab) = Gebäude_Typ(
-        tab.ImmobilienId,
-        tab.Bezeichnung,
-        tab.Beschreibung,
-        tab.Ort,
-        TREAT(VALUE(tab) AS Gebäude_Typ).ZimmerPositionen,
-        grundstück_ref
-    )
-    WHERE tab.ImmobilienId = 3;
-END;
-/
-
-DECLARE
-    immobilien_ref_1 REF Immobilien_Typ;
-    immobilien_ref_2 REF Immobilien_Typ;
-    immobilien_ref_3 REF Immobilien_Typ;
-    immobilien_ref_4 REF Immobilien_Typ;
+);
     
-    -- variable to hold all properties
-    alle_immobilien Immobilien_REF_NESTED_TABLE;
-BEGIN
-    SELECT REF(i) INTO immobilien_ref_1 FROM Immobilien_Tab i WHERE i.ImmobilienId = 1;
-    SELECT REF(i) INTO immobilien_ref_2 FROM Immobilien_Tab i WHERE i.ImmobilienId = 2;
-    SELECT REF(i) INTO immobilien_ref_3 FROM Immobilien_Tab i WHERE i.ImmobilienId = 3;
-    SELECT REF(i) INTO immobilien_ref_4 FROM Immobilien_Tab i WHERE i.ImmobilienId = 4;
+UPDATE Immobilien_Tab it
+SET VALUE(it) = Gebäude_Typ(
+    it.ImmobilienId,
+    it.Bezeichnung,
+    it.Beschreibung,
+    it.Ort,
+    TREAT(VALUE(it) AS Gebäude_Typ).ZimmerPositionen,
+    (SELECT TREAT(REF(grundstück) AS REF Grundstücke_Typ)
+     FROM Immobilien_Tab grundstück
+     WHERE grundstück.ImmobilienId = 6)
+)
+WHERE it.ImmobilienId = 5;
 
-    -- refs of all properties
-    alle_immobilien := Immobilien_REF_NESTED_TABLE(
-        immobilien_ref_1,
-        immobilien_ref_2,
-        immobilien_ref_3,
-        immobilien_ref_4
-    );
-
-    -- Insert new Markler
-    INSERT INTO Makler_Tab VALUES (
-        Makler_Typ(
-            1,
-            'Karl', 
-            'Klammer', 
-            TO_DATE('2000-01-01', 'YYYY-MM-DD'),
-            TO_DATE('2025-11-11', 'YYYY-MM-DD'), 
-            alle_immobilien 
+INSERT INTO Makler_Tab VALUES (
+    Makler_Typ(
+        1,
+        'Karl', 
+        'Klammer', 
+        TO_DATE('2000-01-01', 'YYYY-MM-DD'),
+        TO_DATE('2025-11-11', 'YYYY-MM-DD'), 
+        Immobilien_REF_NESTED_TABLE(
+            (SELECT REF(i) FROM Immobilien_Tab i WHERE i.ImmobilienId = 1),
+            (SELECT REF(i) FROM Immobilien_Tab i WHERE i.ImmobilienId = 2),
+            (SELECT REF(i) FROM Immobilien_Tab i WHERE i.ImmobilienId = 3),
+            (SELECT REF(i) FROM Immobilien_Tab i WHERE i.ImmobilienId = 4)
         )
-    );
-END;
-/
+    )
+);
 
-SELECT 
-    im_tab.ImmobilienId,
+SELECT im_tab.ImmobilienId,
     im_tab.Bezeichnung,
     im_tab.BESCHREIBUNG,
     DEREF(im_tab.ORT)
