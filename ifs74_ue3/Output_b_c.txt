@@ -1,45 +1,19 @@
-
 Type ORT_TYP compiled
-
-
 Type IMMOBILIEN_TYP compiled
-
-
 Type ZIMMER_TYP compiled
-
-
-Type ZIMMER_NESTED_TABLE_TYPE compiled
-
-
+Type ZIMMER_NESTED_TABLE_TYP compiled
 Type GRUNDSTÜCKE_TYP compiled
-
-
 Type GEBÄUDE_TYP compiled
-
-
-Type GEBÄUDE_NESTED_TABLE_TYPE compiled
-
-
+Type GEBÄUDE_REF_NESTED_TABLE_TYP compiled
 Type GRUNDSTÜCKE_TYP altered.
-
-
 Type SEEGRUNDSTÜCKE_TYP compiled
-
-
 Type WALDGRUNDSTÜCKE_TYP compiled
-
-
+Type IMMOBILIEN_REF_NESTED_TABLE compiled
 Type MAKLER_TYP compiled
-
-
 Table ORT_TAB created.
-
-
 Table IMMOBILIEN_TAB created.
-
-
 Table MAKLER_TAB created.
-
 1 row inserted.
-
-1 row inserted.
+PL/SQL procedure successfully completed.
+PL/SQL procedure successfully completed.
+PL/SQL procedure successfully completed.

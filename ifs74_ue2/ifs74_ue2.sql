@@ -31,6 +31,9 @@ INSERT INTO jobs (job_id, job_title, min_salary, max_salary) VALUES ('INVALID', 
 
 SELECT * FROM jobs;
 /
+
+SELECT * FROM jobs;
+/
 -- 1b
 CREATE OR REPLACE TRIGGER createJobHistoryTrigger
 AFTER UPDATE OF job_id, department_id on employees
