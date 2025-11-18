@@ -91,81 +91,81 @@ INSERT INTO Ort_Tab VALUES (
 );
 
 INSERT INTO Immobilien_Tab VALUES (
-        Gebäude_Typ(
-            7,
-            'Bilbos Hobbithütte',
-            'Kein Ort für wilde Parties',
-            (SELECT REF(o) FROM ORT_TAB o WHERE o.ORTID = 1),
-            Zimmer_Nested_Table_Typ(
-                Zimmer_Typ(1, 50, 'Küch-Wohnzimmer', 'Tisch, Sessel'),
-                Zimmer_Typ(2, 12, 'Schlafzimmer', 'Bett, Kleiderschrank'),
-                Zimmer_Typ(3, 18, 'Garderobe', 'Garderobenständer')
-            ),
-            NULL
-        )
-);
-
-
-INSERT INTO Immobilien_Tab VALUES (
-        WALDGRUNDSTÜCKE_TYP(
-            8,
-            'Eisengard',
-            'They are taking the Hobbits to Eisengard',
-            (SELECT REF(o) FROM ORT_TAB o WHERE o.ORTID = 1),
-            7000,
-            'coole Lage',
-                        Gebäude_REF_Nested_Table_Typ((SELECT TREAT(REF(gebäude) AS REF Gebäude_Typ)
-            FROM Immobilien_Tab gebäude
-            WHERE gebäude.ImmobilienId = 7)),
-            'Tannenwald'
-        )
-);
-
-    UPDATE Immobilien_Tab tab
-    SET VALUE(tab) = Gebäude_Typ(
-        tab.ImmobilienId,
-        tab.Bezeichnung,
-        tab.Beschreibung,
-        tab.Ort,
-        TREAT(VALUE(tab) AS Gebäude_Typ).ZimmerPositionen,
-        (SELECT TREAT(REF(grundstück) AS REF Grundstücke_Typ)
-     FROM Immobilien_Tab grundstück
-     WHERE grundstück.ImmobilienId = 8)
+    Gebäude_Typ(
+        1,
+        'Bilbos Hobbithütte',
+        'Kein Ort für wilde Parties',
+        (SELECT REF(o) FROM ORT_TAB o WHERE o.ORTID = 1),
+        Zimmer_Nested_Table_Typ(
+            Zimmer_Typ(1, 50, 'Küch-Wohnzimmer', 'Tisch, Sessel'),
+            Zimmer_Typ(2, 12, 'Schlafzimmer', 'Bett, Kleiderschrank'),
+            Zimmer_Typ(3, 18, 'Garderobe', 'Garderobenständer')
+        ),
+        NULL
     )
-WHERE tab.ImmobilienId = 7;
+);
+
+INSERT INTO Immobilien_Tab VALUES (
+    WALDGRUNDSTÜCKE_TYP(
+        2,
+        'Eisengard',
+        'They are taking the Hobbits to Eisengard',
+        (SELECT REF(o) FROM ORT_TAB o WHERE o.ORTID = 1),
+        7000,
+        'coole Lage',
+        Gebäude_REF_Nested_Table_Typ((SELECT TREAT(REF(gebäude) AS REF Gebäude_Typ)
+            FROM Immobilien_Tab gebäude
+            WHERE gebäude.ImmobilienId = 1)),
+        'Tannenwald'
+    )
+);
+
+UPDATE Immobilien_Tab tab
+SET VALUE(tab) = Gebäude_Typ(
+    tab.ImmobilienId,
+    tab.Bezeichnung,
+    tab.Beschreibung,
+    tab.Ort,
+    TREAT(VALUE(tab) AS Gebäude_Typ).ZimmerPositionen,
+    (SELECT TREAT(REF(grundstück) AS REF Grundstücke_Typ)
+	FROM Immobilien_Tab grundstück
+	WHERE grundstück.ImmobilienId = 2)
+)
+WHERE tab.ImmobilienId = 1;
+
 
 
 INSERT INTO Immobilien_Tab VALUES (
-       Gebäude_Typ(
-           5,
-           'Benkos Ultravilla',
-           'Gehört der Mutter',
-           (SELECT REF(o) FROM ORT_TAB o WHERE o.ORTID = 1),
-           Zimmer_Nested_Table_Typ(
-               Zimmer_Typ(4, 100012, 'Küch-Wohnzimmer', 'Butler, Guccimesser'),
-               Zimmer_Typ(5, 67, 'Abstellkammer', 'Gucci-Abstellregal'),
-               Zimmer_Typ(6, 100000, 'Benkos Kinderzimmer', 'Ultramega-Guccibett'),
-               Zimmer_Typ(7, 10000, 'Rooftop Skyview Pool', 'Ultramega-Guccipool')
-           ),
-           NULL
-       )
+    Gebäude_Typ(
+        3,
+        'Benkos Ultravilla',
+        'Gehört der Mutter',
+        (SELECT REF(o) FROM ORT_TAB o WHERE o.ORTID = 1),
+        Zimmer_Nested_Table_Typ(
+            Zimmer_Typ(4, 100012, 'Küch-Wohnzimmer', 'Butler, Guccimesser'),
+            Zimmer_Typ(5, 67, 'Abstellkammer', 'Gucci-Abstellregal'),
+            Zimmer_Typ(6, 100000, 'Benkos Kinderzimmer', 'Ultramega-Guccibett'),
+            Zimmer_Typ(7, 10000, 'Rooftop Skyview Pool', 'Ultramega-Guccipool')
+        ),
+        NULL
+    )
 );
 
 INSERT INTO Immobilien_Tab VALUES (
         WALDGRUNDSTÜCKE_TYP(
-            6,
-            'Benkos Privatvilla',
-            'Villa eines ehemaligen Kakaoherstellers',
-            (SELECT REF(o) FROM ORT_TAB o WHERE o.ORTID = 1),
-            5000,
-            'Richtig cooler Seezugang für Reiche',
-            Gebäude_REF_Nested_Table_Typ((SELECT TREAT(REF(gebäude) AS REF Gebäude_Typ)
+        4,
+        'Benkos Privatvilla',
+        'Villa eines ehemaligen Kakaoherstellers',
+        (SELECT REF(o) FROM ORT_TAB o WHERE o.ORTID = 1),
+        5000,
+        'Richtig cooler Seezugang für Reiche',
+        Gebäude_REF_Nested_Table_Typ((SELECT TREAT(REF(gebäude) AS REF Gebäude_Typ)
             FROM Immobilien_Tab gebäude
             WHERE gebäude.ImmobilienId = 3)),
-            1000
-        )
+        1000
+    )
 );
-    
+
 UPDATE Immobilien_Tab it
 SET VALUE(it) = Gebäude_Typ(
     it.ImmobilienId,
@@ -174,10 +174,10 @@ SET VALUE(it) = Gebäude_Typ(
     it.Ort,
     TREAT(VALUE(it) AS Gebäude_Typ).ZimmerPositionen,
     (SELECT TREAT(REF(grundstück) AS REF Grundstücke_Typ)
-     FROM Immobilien_Tab grundstück
-     WHERE grundstück.ImmobilienId = 6)
+	FROM Immobilien_Tab grundstück
+	WHERE grundstück.ImmobilienId = 4)
 )
-WHERE it.ImmobilienId = 5;
+WHERE it.ImmobilienId = 3;
 
 INSERT INTO Makler_Tab VALUES (
     Makler_Typ(
@@ -196,16 +196,16 @@ INSERT INTO Makler_Tab VALUES (
 );
 
 SELECT im_tab.ImmobilienId,
-    im_tab.Bezeichnung,
-    im_tab.BESCHREIBUNG,
-    DEREF(im_tab.ORT)
+im_tab.Bezeichnung,
+im_tab.BESCHREIBUNG,
+DEREF(im_tab.ORT)
 FROM Immobilien_Tab im_tab;
 /
 
 SELECT
-    ma_tab.MAKLERID,
-    ma_tab.NACHNAME,
-    ma_tab.REFIMMOBILIEN
+ma_tab.MAKLERID,
+ma_tab.NACHNAME,
+ma_tab.REFIMMOBILIEN
 FROM MAKLER_TAB ma_tab;
 /
 
@@ -213,10 +213,10 @@ FROM MAKLER_TAB ma_tab;
 DROP TYPE Ort_Typ FORCE;
 DROP TYPE Immobilien_Typ FORCE;
 DROP TYPE Zimmer_Typ FORCE;
-DROP TYPE Zimmer_Nested_Table_Type FORCE;
+DROP TYPE Zimmer_Nested_Table_Typ FORCE;
 DROP TYPE Grundstücke_Typ FORCE;
 DROP TYPE Gebäude_Typ FORCE;
-DROP TYPE Gebäude_REF_Nested_Table_Type FORCE;
+DROP TYPE Gebäude_REF_Nested_Table_Typ FORCE;
 DROP TYPE Grundstücke_Typ FORCE;
 DROP TYPE Seegrundstücke_Typ FORCE;
 DROP TYPE Waldgrundstücke_Typ FORCE;
@@ -231,26 +231,26 @@ Drop TABLE Makler_REF_Immobilien CASCADE CONSTRAINT;
 
 --2
 CREATE TABLE Fahrzeug (
-FahrzeugNr NUMBER(4) PRIMARY KEY,
-Gewicht NUMBER(6));
+    FahrzeugNr NUMBER(4) PRIMARY KEY,
+    Gewicht NUMBER(6));
 
 CREATE TABLE Auto (
-FahrzeugNr NUMBER(4) PRIMARY KEY,
-MaxGeschwindigkeit NUMBER(6),
-FOREIGN KEY (FahrzeugNr)
-REFERENCES Fahrzeug);
+    FahrzeugNr NUMBER(4) PRIMARY KEY,
+    MaxGeschwindigkeit NUMBER(6),
+    FOREIGN KEY (FahrzeugNr)
+    REFERENCES Fahrzeug);
 
 CREATE TABLE Fahrrad (
-FahrzeugNr NUMBER(4) PRIMARY KEY,
-Rahmenhoehe NUMBER(6),
-FOREIGN KEY (FahrzeugNr)
-REFERENCES Fahrzeug);
+    FahrzeugNr NUMBER(4) PRIMARY KEY,
+    Rahmenhoehe NUMBER(6),
+    FOREIGN KEY (FahrzeugNr)
+    REFERENCES Fahrzeug);
 
 CREATE TABLE EBike (
-FahrzeugNr NUMBER(4) PRIMARY KEY,
-MaxReichweite NUMBER(6),
-FOREIGN KEY (FahrzeugNr)
-REFERENCES Fahrrad);
+    FahrzeugNr NUMBER(4) PRIMARY KEY,
+    MaxReichweite NUMBER(6),
+    FOREIGN KEY (FahrzeugNr)
+    REFERENCES Fahrrad);
 
 INSERT INTO Fahrzeug (FahrzeugNr, Gewicht) VALUES (0, 700);
 INSERT INTO Fahrzeug (FahrzeugNr, Gewicht) VALUES (1, 1500);
