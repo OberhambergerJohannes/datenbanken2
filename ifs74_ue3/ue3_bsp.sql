@@ -101,7 +101,7 @@ INSERT INTO Immobilien_Tab VALUES (
                 Zimmer_Typ(2, 12, 'Schlafzimmer', 'Bett, Kleiderschrank'),
                 Zimmer_Typ(3, 18, 'Garderobe', 'Garderobenständer')
             ),
-            NULL  -- ref will be added later
+            NULL
         )
 );
 
