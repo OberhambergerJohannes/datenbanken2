@@ -11,4 +11,4 @@ count(/staffinfo/job)
 //employee[manager=108]
 //country/location[@id=2900]
 //employee[salary >= 12000]
-//location[postalcode and stateprovince]
+//location[postalcode and stateprovince
