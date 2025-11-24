@@ -1,0 +1,16 @@
+a) /staffinfo/job
+b) /*
+c) count(/staffinfo/job)
+d) /*/*
+e) //employee[@id]
+f) //*[@*]
+g) /staffinfo/job[5]
+h) /staffinfo/job[last()]
+i) /staffinfo/region[1]/country[3]
+j) //department[not(@manager)]
+k) //employee[manager=108]
+l) //country/location[@id=2900]
+m) //employee[salary >= 12000]
+n) //location[postalcode and stateprovince]
+
+
