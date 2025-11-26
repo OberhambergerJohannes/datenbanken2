@@ -1,0 +1,112 @@
+<?xml version='1.0'?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+        targetNamespace="http://www.cis.jku.at/IFS2/Staffinfo" xmlns:si="http://www.cis.jku.at/IFS2/Staffinfo">
+    <element name="staffinfo">
+        <complexType>
+            <sequence>
+                <element maxOccurs="unbounded" ref="si:job"/>
+                <element maxOccurs="unbounded" ref="si:region"/>
+            </sequence>
+        </complexType>
+
+
+        <key name="jobKey">
+            <selector xpath="si:job"/>
+            <field xpath="@id"/>
+        </key>
+        <key name="employeeKey">
+            <selector xpath=".//si:employee"/>
+            <field xpath="@id"/>
+        </key>
+        <keyref name="jobKeyRef" refer="si:jobKey">
+            <selector xpath=".//si:employee"/>
+            <field xpath="si:jobid"/>
+        </keyref>
+
+        <key name="regionKey">
+            <selector xpath="si:region"/>
+            <field xpath="@id"/>
+        </key>
+
+        <key name="countryKey">
+            <selector xpath=".//si:country"/>
+            <field xpath="@id"/>
+        </key>
+
+        <key name="locationKey">
+            <selector xpath=".//si:location"/>
+            <field xpath="@id"/>
+        </key>
+
+        <key name="departmentKey">
+            <selector xpath=".//si:department"/>
+            <field xpath="@id"/>
+        </key>
+    </element>
+    
+    <element name="job"  type="si:jobType"/>
+    <complexType name="jobType">
+        <sequence>
+            <element name="title" type="string"/>
+            <element name="minsalary" type="int"/>
+            <element name="maxsalary" type="int"/>
+        </sequence>
+        <attribute name="id" type="NCName" use="required"/>
+    </complexType>
+    
+    <element name="region" type="si:regionType"/>
+    <complexType name="regionType">
+        <sequence>
+            <element maxOccurs="unbounded" ref="si:country"/>
+        </sequence>
+        <attribute name="id" type="integer" use="required"/>
+        <attribute name="name" type="string" use="required"/>
+    </complexType>
+
+
+    <element name="country" type="si:countryType"/>
+    <complexType name="countryType">
+        <sequence>
+            <element name="name" type="string"/>
+            <element minOccurs="0" maxOccurs="unbounded" ref="si:location"/>
+        </sequence>
+        <attribute name="id" type="NCName" use="required"/>
+    </complexType>
+    
+    <element name="location" type="si:locationType"/>
+    <complexType name="locationType">
+        <sequence>
+            <element name="streetaddress" type="string"/>
+            <element name="postalcode" type="string" minOccurs="0"/>
+            <element name="city" type="string"/>
+            <element name="stateprovince" type="string" minOccurs="0"/>
+            <element minOccurs="0" maxOccurs="unbounded" ref="si:department"/>
+        </sequence>
+        <attribute name="id" type="integer" use="required"/>
+    </complexType>
+    
+    <element name="department" type="si:departmentType"/>
+    <complexType name="departmentType">
+        <sequence>
+            <element name="name" type="string"/>
+            <element minOccurs="0" maxOccurs="unbounded" ref="si:employee"/>
+        </sequence>
+        <attribute name="manager" type="integer" use="optional"/>
+        <attribute name="id" type="integer" use="required"/>
+    </complexType>
+
+    <element name="employee" type="si:employeeType"/>
+    <complexType name="employeeType">
+        <sequence>
+            <element name="firstname" type="string"/>
+            <element name="lastname" type="string"/>
+            <element name="email" type="string"/>
+            <element name="phone" type="NMTOKEN"/>
+            <element name="hiredate" type="date"/>
+            <element name="jobid" type="NCName"/>
+            <element name="salary" type="integer"/>
+            <element name="manager" type="integer" minOccurs="0"/>
+        </sequence>
+        <attribute name="id" type="integer" use="required"/>
+    </complexType>
+</schema>
