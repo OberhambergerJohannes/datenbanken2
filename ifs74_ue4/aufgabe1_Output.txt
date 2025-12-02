@@ -1,0 +1,515 @@
+XPath expression
+    /staffinfo/job
+Found matches in XML Files  (19 usages found)
+    Unclassified  (19 usages found)
+        ifs74_ue4  (19 usages found)
+              (19 usages found)
+                staffinfo.xml  (19 usages found)
+                    2 <job id="AD_PRES">
+                    7 <job id="AD_VP">
+                    12 <job id="AD_ASST">
+                    17 <job id="FI_MGR">
+                    22 <job id="FI_ACCOUNT">
+                    27 <job id="AC_MGR">
+                    32 <job id="AC_ACCOUNT">
+                    37 <job id="SA_MAN">
+                    42 <job id="SA_REP">
+                    47 <job id="PU_MAN">
+                    52 <job id="PU_CLERK">
+                    57 <job id="ST_MAN">
+                    62 <job id="ST_CLERK">
+                    67 <job id="SH_CLERK">
+                    72 <job id="IT_PROG">
+                    77 <job id="MK_MAN">
+                    82 <job id="MK_REP">
+                    87 <job id="HR_REP">
+                    92 <job id="PR_REP">
+
+XPath expression
+    *
+Found matches in XML Files  (3 usages found)
+    Unclassified  (3 usages found)
+        ifs74_ue4  (3 usages found)
+              (3 usages found)
+                staffinfo.xml  (3 usages found)
+                    33 <title>Public Accountant</title>
+                    34 <minsalary>4200</minsalary>
+                    35 <maxsalary>9000</maxsalary>
+
+count(/staffinfo/job)
+XPath Result (Number)
+19.0
+
+XPath expression
+    /*/*
+Found matches in XML Files  (23 usages found)
+    Unclassified  (23 usages found)
+        ifs74_ue4  (23 usages found)
+              (23 usages found)
+                staffinfo.xml  (23 usages found)
+                    2 <job id="AD_PRES">
+                    7 <job id="AD_VP">
+                    12 <job id="AD_ASST">
+                    17 <job id="FI_MGR">
+                    22 <job id="FI_ACCOUNT">
+                    27 <job id="AC_MGR">
+                    32 <job id="AC_ACCOUNT">
+                    37 <job id="SA_MAN">
+                    42 <job id="SA_REP">
+                    47 <job id="PU_MAN">
+                    52 <job id="PU_CLERK">
+                    57 <job id="ST_MAN">
+                    62 <job id="ST_CLERK">
+                    67 <job id="SH_CLERK">
+                    72 <job id="IT_PROG">
+                    77 <job id="MK_MAN">
+                    82 <job id="MK_REP">
+                    87 <job id="HR_REP">
+                    92 <job id="PR_REP">
+                    97 <region id="1" name="Europe">
+                    542 <region id="2" name="America">
+                    1378 <region id="3" name="Asia">
+                    1431 <region id="4" name="Middle East and Africa">
+
+XPath expression
+    //employee/@id
+Found matches in XML Files  (106 usages found)
+    Unclassified  (106 usages found)
+        ifs74_ue4  (106 usages found)
+              (106 usages found)
+                staffinfo.xml  (106 usages found)
+                    125 <employee id="204">
+                    173 <employee id="203">
+                    192 <employee id="145">
+                    202 <employee id="146">
+                    212 <employee id="147">
+                    222 <employee id="148">
+                    232 <employee id="149">
+                    242 <employee id="150">
+                    252 <employee id="151">
+                    262 <employee id="152">
+                    272 <employee id="153">
+                    282 <employee id="154">
+                    292 <employee id="155">
+                    302 <employee id="156">
+                    312 <employee id="157">
+                    322 <employee id="158">
+                    332 <employee id="159">
+                    342 <employee id="160">
+                    352 <employee id="161">
+                    362 <employee id="162">
+                    372 <employee id="163">
+                    382 <employee id="164">
+                    392 <employee id="165">
+                    402 <employee id="166">
+                    412 <employee id="167">
+                    422 <employee id="168">
+                    432 <employee id="169">
+                    442 <employee id="170">
+                    452 <employee id="171">
+                    462 <employee id="172">
+                    472 <employee id="173">
+                    482 <employee id="174">
+                    492 <employee id="175">
+                    502 <employee id="176">
+                    512 <employee id="177">
+                    522 <employee id="179">
+                    564 <employee id="201">
+                    574 <employee id="202">
+                    611 <employee id="103">
+                    621 <employee id="104">
+                    631 <employee id="105">
+                    641 <employee id="106">
+                    651 <employee id="107">
+                    670 <employee id="120">
+                    680 <employee id="121">
+                    690 <employee id="122">
+                    700 <employee id="123">
+                    710 <employee id="124">
+                    720 <employee id="125">
+                    730 <employee id="126">
+                    740 <employee id="127">
+                    750 <employee id="128">
+                    760 <employee id="129">
+                    770 <employee id="130">
+                    780 <employee id="131">
+                    790 <employee id="132">
+                    800 <employee id="133">
+                    810 <employee id="134">
+                    820 <employee id="135">
+                    830 <employee id="136">
+                    840 <employee id="137">
+                    850 <employee id="138">
+                    860 <employee id="139">
+                    870 <employee id="140">
+                    880 <employee id="141">
+                    890 <employee id="142">
+                    900 <employee id="143">
+                    910 <employee id="144">
+                    920 <employee id="180">
+                    930 <employee id="181">
+                    940 <employee id="182">
+                    950 <employee id="183">
+                    960 <employee id="184">
+                    970 <employee id="185">
+                    980 <employee id="186">
+                    990 <employee id="187">
+                    1000 <employee id="188">
+                    1010 <employee id="189">
+                    1020 <employee id="190">
+                    1030 <employee id="191">
+                    1040 <employee id="192">
+                    1050 <employee id="193">
+                    1060 <employee id="194">
+                    1070 <employee id="195">
+                    1080 <employee id="196">
+                    1090 <employee id="197">
+                    1100 <employee id="198">
+                    1110 <employee id="199">
+                    1135 <employee id="200">
+                    1148 <employee id="114">
+                    1158 <employee id="115">
+                    1168 <employee id="116">
+                    1178 <employee id="117">
+                    1188 <employee id="118">
+                    1198 <employee id="119">
+                    1211 <employee id="100">
+                    1220 <employee id="101">
+                    1230 <employee id="102">
+                    1243 <employee id="108">
+                    1253 <employee id="109">
+                    1263 <employee id="110">
+                    1273 <employee id="111">
+                    1283 <employee id="112">
+                    1293 <employee id="113">
+                    1306 <employee id="205">
+                    1316 <employee id="206">
+
+XPath expression
+    //@*
+Found matches in XML Files  (204 usages found)
+    Unclassified  (204 usages found)
+        ifs74_ue4  (204 usages found)
+              (204 usages found)
+                staffinfo.xml  (204 usages found)
+                    2 <job id="AD_PRES">
+                    7 <job id="AD_VP">
+                    12 <job id="AD_ASST">
+                    17 <job id="FI_MGR">
+                    22 <job id="FI_ACCOUNT">
+                    27 <job id="AC_MGR">
+                    32 <job id="AC_ACCOUNT">
+                    37 <job id="SA_MAN">
+                    42 <job id="SA_REP">
+                    47 <job id="PU_MAN">
+                    52 <job id="PU_CLERK">
+                    57 <job id="ST_MAN">
+                    62 <job id="ST_CLERK">
+                    67 <job id="SH_CLERK">
+                    72 <job id="IT_PROG">
+                    77 <job id="MK_MAN">
+                    82 <job id="MK_REP">
+                    87 <job id="HR_REP">
+                    92 <job id="PR_REP">
+                    97 <region id="1" name="Europe">
+                    98 <country id="BE">
+                    101 <country id="CH">
+                    103 <location id="2900">
+                    109 <location id="3000">
+                    116 <country id="DE">
+                    118 <location id="2700">
+                    123 <department manager="204" id="70">
+                    125 <employee id="204">
+                    138 <country id="DK">
+                    141 <country id="FR">
+                    144 <country id="IT">
+                    146 <location id="1000">
+                    151 <location id="1100">
+                    157 <country id="NL">
+                    159 <location id="3100">
+                    166 <country id="UK">
+                    168 <location id="2400">
+                    171 <department manager="203" id="40">
+                    173 <employee id="203">
+                    185 <location id="2500">
+                    190 <department manager="145" id="80">
+                    192 <employee id="145">
+                    202 <employee id="146">
+                    212 <employee id="147">
+                    222 <employee id="148">
+                    232 <employee id="149">
+                    242 <employee id="150">
+                    252 <employee id="151">
+                    262 <employee id="152">
+                    272 <employee id="153">
+                    282 <employee id="154">
+                    292 <employee id="155">
+                    302 <employee id="156">
+                    312 <employee id="157">
+                    322 <employee id="158">
+                    332 <employee id="159">
+                    342 <employee id="160">
+                    352 <employee id="161">
+                    362 <employee id="162">
+                    372 <employee id="163">
+                    382 <employee id="164">
+                    392 <employee id="165">
+                    402 <employee id="166">
+                    412 <employee id="167">
+                    422 <employee id="168">
+                    432 <employee id="169">
+                    442 <employee id="170">
+                    452 <employee id="171">
+                    462 <employee id="172">
+                    472 <employee id="173">
+                    482 <employee id="174">
+                    492 <employee id="175">
+                    502 <employee id="176">
+                    512 <employee id="177">
+                    522 <employee id="179">
+                    534 <location id="2600">
+                    542 <region id="2" name="America">
+                    543 <country id="AR">
+                    546 <country id="BR">
+                    548 <location id="2800">
+                    555 <country id="CA">
+                    557 <location id="1800">
+                    562 <department manager="201" id="20">
+                    564 <employee id="201">
+                    574 <employee id="202">
+                    586 <location id="1900">
+                    593 <country id="MX">
+                    595 <location id="3200">
+                    602 <country id="US">
+                    604 <location id="1400">
+                    609 <department manager="103" id="60">
+                    611 <employee id="103">
+                    621 <employee id="104">
+                    631 <employee id="105">
+                    641 <employee id="106">
+                    651 <employee id="107">
+                    663 <location id="1500">
+                    668 <department manager="121" id="50">
+                    670 <employee id="120">
+                    680 <employee id="121">
+                    690 <employee id="122">
+                    700 <employee id="123">
+                    710 <employee id="124">
+                    720 <employee id="125">
+                    730 <employee id="126">
+                    740 <employee id="127">
+                    750 <employee id="128">
+                    760 <employee id="129">
+                    770 <employee id="130">
+                    780 <employee id="131">
+                    790 <employee id="132">
+                    800 <employee id="133">
+                    810 <employee id="134">
+                    820 <employee id="135">
+                    830 <employee id="136">
+                    840 <employee id="137">
+                    850 <employee id="138">
+                    860 <employee id="139">
+                    870 <employee id="140">
+                    880 <employee id="141">
+                    890 <employee id="142">
+                    900 <employee id="143">
+                    910 <employee id="144">
+                    920 <employee id="180">
+                    930 <employee id="181">
+                    940 <employee id="182">
+                    950 <employee id="183">
+                    960 <employee id="184">
+                    970 <employee id="185">
+                    980 <employee id="186">
+                    990 <employee id="187">
+                    1000 <employee id="188">
+                    1010 <employee id="189">
+                    1020 <employee id="190">
+                    1030 <employee id="191">
+                    1040 <employee id="192">
+                    1050 <employee id="193">
+                    1060 <employee id="194">
+                    1070 <employee id="195">
+                    1080 <employee id="196">
+                    1090 <employee id="197">
+                    1100 <employee id="198">
+                    1110 <employee id="199">
+                    1122 <location id="1600">
+                    1128 <location id="1700">
+                    1133 <department manager="200" id="10">
+                    1135 <employee id="200">
+                    1146 <department manager="114" id="30">
+                    1148 <employee id="114">
+                    1158 <employee id="115">
+                    1168 <employee id="116">
+                    1178 <employee id="117">
+                    1188 <employee id="118">
+                    1198 <employee id="119">
+                    1209 <department manager="100" id="90">
+                    1211 <employee id="100">
+                    1220 <employee id="101">
+                    1230 <employee id="102">
+                    1241 <department manager="108" id="100">
+                    1243 <employee id="108">
+                    1253 <employee id="109">
+                    1263 <employee id="110">
+                    1273 <employee id="111">
+                    1283 <employee id="112">
+                    1293 <employee id="113">
+                    1304 <department manager="205" id="110">
+                    1306 <employee id="205">
+                    1316 <employee id="206">
+                    1327 <department id="120">
+                    1330 <department id="130">
+                    1333 <department id="140">
+                    1336 <department id="150">
+                    1339 <department id="160">
+                    1342 <department id="170">
+                    1345 <department id="180">
+                    1348 <department id="190">
+                    1351 <department id="200">
+                    1354 <department id="210">
+                    1357 <department id="220">
+                    1360 <department id="230">
+                    1363 <department id="240">
+                    1366 <department id="250">
+                    1369 <department id="260">
+                    1372 <department id="270">
+                    1378 <region id="3" name="Asia">
+                    1379 <country id="AU">
+                    1381 <location id="2200">
+                    1388 <country id="CN">
+                    1390 <location id="2000">
+                    1396 <country id="HK">
+                    1399 <country id="IN">
+                    1401 <location id="2100">
+                    1408 <country id="JP">
+                    1410 <location id="1200">
+                    1416 <location id="1300">
+                    1422 <country id="SG">
+                    1424 <location id="2300">
+                    1431 <region id="4" name="Middle East and Africa">
+                    1432 <country id="EG">
+                    1435 <country id="IL">
+                    1438 <country id="KW">
+                    1441 <country id="NG">
+                    1444 <country id="ZM">
+                    1447 <country id="ZW">
+
+
+
+XPath expression
+    /staffinfo/job[5]
+Found matches in XML Files  (1 usage found)
+    Unclassified  (1 usage found)
+        ifs74_ue4  (1 usage found)
+              (1 usage found)
+                staffinfo.xml  (1 usage found)
+                    22 <job id="FI_ACCOUNT">
+
+XPath expression
+    /staffinfo/job[last()]
+Found matches in XML Files  (1 usage found)
+    Unclassified  (1 usage found)
+        ifs74_ue4  (1 usage found)
+              (1 usage found)
+                staffinfo.xml  (1 usage found)
+                    92 <job id="PR_REP">
+
+XPath expression
+    //region[1]/country[3]
+Found matches in XML Files  (1 usage found)
+    Unclassified  (1 usage found)
+        ifs74_ue4  (1 usage found)
+              (1 usage found)
+                staffinfo.xml  (1 usage found)
+                    116 <country id="DE">
+#
+XPath expression
+    .//department[not(@manager)]
+Found matches in XML Files  (16 usages found)
+    Unclassified  (16 usages found)
+        ifs74_ue4  (16 usages found)
+              (16 usages found)
+                staffinfo.xml  (16 usages found)
+                    1327 <department id="120">
+                    1330 <department id="130">
+                    1333 <department id="140">
+                    1336 <department id="150">
+                    1339 <department id="160">
+                    1342 <department id="170">
+                    1345 <department id="180">
+                    1348 <department id="190">
+                    1351 <department id="200">
+                    1354 <department id="210">
+                    1357 <department id="220">
+                    1360 <department id="230">
+                    1363 <department id="240">
+                    1366 <department id="250">
+                    1369 <department id="260">
+                    1372 <department id="270">
+
+XPath expression
+    //employee[manager=108]
+Found matches in XML Files  (5 usages found)
+    Unclassified  (5 usages found)
+        ifs74_ue4  (5 usages found)
+              (5 usages found)
+                staffinfo.xml  (5 usages found)
+                    1253 <employee id="109">
+                    1263 <employee id="110">
+                    1273 <employee id="111">
+                    1283 <employee id="112">
+                    1293 <employee id="113">
+
+XPath expression
+    //country/location[@id=2900]
+Found matches in XML Files  (1 usage found)
+    Unclassified  (1 usage found)
+        ifs74_ue4  (1 usage found)
+              (1 usage found)
+                staffinfo.xml  (1 usage found)
+                    103 <location id="2900">
+
+XPath expression
+    //employee[salary >= 12000]
+Found matches in XML Files  (9 usages found)
+    Unclassified  (9 usages found)
+        ifs74_ue4  (9 usages found)
+              (9 usages found)
+                staffinfo.xml  (9 usages found)
+                    192 <employee id="145">
+                    202 <employee id="146">
+                    212 <employee id="147">
+                    564 <employee id="201">
+                    1211 <employee id="100">
+                    1220 <employee id="101">
+                    1230 <employee id="102">
+                    1243 <employee id="108">
+                    1306 <employee id="205">
+
+XPath expression
+    //location[postalcode and stateprovince]
+Found matches in XML Files  (17 usages found)
+    Unclassified  (17 usages found)
+        ifs74_ue4  (17 usages found)
+              (17 usages found)
+                staffinfo.xml  (17 usages found)
+                    103 <location id="2900">
+                    109 <location id="3000">
+                    118 <location id="2700">
+                    159 <location id="3100">
+                    185 <location id="2500">
+                    534 <location id="2600">
+                    548 <location id="2800">
+                    557 <location id="1800">
+                    586 <location id="1900">
+                    595 <location id="3200">
+                    604 <location id="1400">
+                    663 <location id="1500">
+                    1122 <location id="1600">
+                    1128 <location id="1700">
+                    1381 <location id="2200">
+                    1401 <location id="2100">
+                    1410 <location id="1200">
