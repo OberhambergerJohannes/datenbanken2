@@ -11,7 +11,7 @@ CREATE OR REPLACE TYPE Immobilien_Typ AS OBJECT (
     Bezeichnung VARCHAR2(100),
     Beschreibung VARCHAR2(1000),
     Ort REF Ort_Typ
-)NOT FINAL NOT INSTANTIABLE;
+) NOT FINAL NOT INSTANTIABLE;
 /
 
 CREATE OR REPLACE TYPE Zimmer_Typ AS OBJECT (
@@ -279,16 +279,15 @@ CREATE OR REPLACE TYPE EBike_Typ UNDER Fahrzeug_Typ(
 );
 /
 
-CREATE OR REPLACE VIEW Fahrzeug_Typ_View 
-OF Fahrzeug_Typ  
+CREATE OR REPLACE VIEW Fahrzeug_Typ_View OF Fahrzeug_Typ  
 WITH OBJECT IDENTIFIER (FahrzeugNr)
 AS 
 SELECT Fahrzeug_Typ(f.FahrzeugNr, f.Gewicht)
 FROM Fahrzeug f;
 /
+-- spezialisierungen müssen rausgenommen werden 
 
-CREATE OR REPLACE VIEW Auto_Typ_View
-OF Auto_Typ
+CREATE OR REPLACE VIEW Auto_Typ_View OF Auto_Typ
 UNDER Fahrzeug_Typ_View
 AS
 SELECT f.FahrzeugNr,f.Gewicht,a.MaxGeschwindigkeit
@@ -297,8 +296,7 @@ JOIN Auto a
 ON f.FahrzeugNr = a.FahrzeugNr;
 /
 
-CREATE OR REPLACE VIEW EBike_Typ_View
-OF EBike_Typ
+CREATE OR REPLACE VIEW EBike_Typ_View OF EBike_Typ
 UNDER Fahrzeug_Typ_View
 AS 
 SELECT f.FahrzeugNr, f.Gewicht, r.Rahmenhoehe, e.MaxReichweite
@@ -310,5 +308,7 @@ JOIN EBike e ON e.FahrzeugNr = r.FahrzeugNr
 --b
 SELECT VALUE(f) FROM Fahrzeug_Typ_View f;
 SELECT REF(a) FROM Auto_Typ_View a;
-SELECT VALUE(e).FahrzeugNr, VALUE(e).Gewicht, VALUE(e).Rahmenhoehe, VALUE(e).MaxReichweite FROM EBike_Typ_View e;
+SELECT VALUE(e).FahrzeugNr, VALUE(e).Gewicht, VALUE(e).Rahmenhoehe, VALUE(e).MaxReichweite 
+FROM EBike_Typ_View e;
+/
 SELECT VALUE(f) FROM Fahrzeug_Typ_View f WHERE VALUE(f) IS OF (ONLY Fahrzeug_Typ);
