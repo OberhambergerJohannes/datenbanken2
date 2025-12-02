@@ -42,6 +42,11 @@
             <selector xpath=".//si:department"/>
             <field xpath="@id"/>
         </key>
+
+        <keyref name="managerKeyRef" refer="si:employeeKey">
+            <selector xpath=".//si:employee"/>
+            <field xpath="si:manager"/>
+        </keyref>
     </element>
     
     <element name="job"  type="si:jobType"/>
