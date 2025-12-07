@@ -1,0 +1,10 @@
+<Result_Example_XQuery>
+    <location>
+        <locationId>2500</locationId>
+        <city>Oxford</city>
+    </location>
+    <location>
+        <locationId>1500</locationId>
+        <city>South San Francisco</city>
+    </location>
+</Result_Example_XQuery>
