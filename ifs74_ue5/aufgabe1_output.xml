@@ -33,3 +33,14 @@
 </employee>
 </Result_b_XQuery>
 
+<Result_c_XQuery>
+<employee employeeId="201">
+    <lastName>Hartstein</lastName>
+    <departmentId>20</departmentId>
+    <manager managerId="100">
+        <lastName>King</lastName>
+        <departmentId>90</departmentId>
+    </manager>
+</employee>
+</Result_c_XQuery>
+

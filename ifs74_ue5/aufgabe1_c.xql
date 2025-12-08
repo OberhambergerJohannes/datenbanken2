@@ -2,15 +2,16 @@ xquery version "1.0";
 <Result_c_XQuery>{
 
 (:used parse-xml instead of doc() because otherwise, input was interpreted as string by editor :)
-for $e in parse-xml(.)//employee, $m in parse-xml(.)//employee, $c in parse-xml(.)//country/name
-where $c = "Canada" and $e/manager = $m/@id and $e/department != $m/department
+for $e in parse-xml(.)//country[name = "Canada"]//employee, $m in parse-xml(.)//employee
+where $e/manager = $m/@id and $e/ancestor::department/@id != $m/ancestor::department/@id
 
 return
-    <employee>
-        <employeeId>{data($e/@id)}</employeeId>
+    <employee employeeId="{data($e/@id)}">
         <lastName>{data($e/lastname)}</lastName>
-        <jobId>{data($j/@id)}</jobId>
-        <jobTitle>{data($j/title)}</jobTitle>
-        <salary>{data($e//salary)}</salary>
+        <departmentId>{data($e/ancestor::department/@id)}</departmentId>
+      <manager managerId="{data($m/@id)}">
+        <lastName>{data($m/lastname)}</lastName>
+        <departmentId>{data($m/ancestor::department/@id)}</departmentId>
+      </manager>
     </employee>
 }</Result_c_XQuery>
