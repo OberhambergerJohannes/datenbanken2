@@ -8,3 +8,28 @@
         <city>South San Francisco</city>
     </location>
 </Result_Example_XQuery>
+
+<Result_b_XQuery>
+<employee>
+    <employeeId>182</employeeId>
+    <lastName>Sullivan</lastName>
+    <jobId>SH_CLERK</jobId>
+    <jobTitle>Shipping Clerk</jobTitle>
+    <salary>2500</salary>
+</employee>
+<employee>
+    <employeeId>191</employeeId>
+    <lastName>Perkins</lastName>
+    <jobId>SH_CLERK</jobId>
+    <jobTitle>Shipping Clerk</jobTitle>
+    <salary>2500</salary>
+</employee>
+<employee>
+    <employeeId>119</employeeId>
+    <lastName>Colmenares</lastName>
+    <jobId>PU_CLERK</jobId>
+    <jobTitle>Purchasing Clerk</jobTitle>
+    <salary>2500</salary>
+</employee>
+</Result_b_XQuery>
+
