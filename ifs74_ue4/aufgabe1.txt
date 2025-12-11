@@ -1,6 +1,6 @@
 /staffinfo/job
 *
-count(/staffinfo/job)
+count(//job)
 /*/*
 //employee/@id
 //@*
