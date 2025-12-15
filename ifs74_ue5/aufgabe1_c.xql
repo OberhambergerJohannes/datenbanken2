@@ -1,17 +1,17 @@
 xquery version "1.0";
-declare option output:method "xml";
-declare option output:indent "yes";
-
 <Result_c_XQuery>{
-for $emp in doc("./Studium/3.Semester/Datenbanken2/UE/datenbanken2/ifs74_ue5/staffinfo.xml")//country[name = "Canada"]//employee,
-    $manager in doc("./Studium/3.Semester/Datenbanken2/UE/datenbanken2/ifs74_ue5/staffinfo.xml")//employee[@id = $emp/manager]
-    where $emp/ancestor::department/@id = $manager/ancestor::department/@id
-    return   <employee employeeId="{data($emp/@id)}">
-                   <lastName>{data($emp/lastname)}</lastName>
-                   <departmentId>{data($emp/ancestor::department/@id)}</departmentId>
-                 <manager managerId="{data($manager/@id)}">
-                   <lastName>{data($manager/lastname)}</lastName>
-                   <departmentId>{data($manager/ancestor::department/@id)}</departmentId>
-                 </manager>
-               </employee>
+
+(:used parse-xml instead of doc() because otherwise, input was interpreted as string by editor :)
+for $e in parse-xml(.)//country[name = "Canada"]//employee, $m in parse-xml(.)//employee
+where $e/manager = $m/@id and $e/ancestor::department/@id != $m/ancestor::department/@id
+
+return
+    <employee employeeId="{data($e/@id)}">
+        <lastName>{data($e/lastname)}</lastName>
+        <departmentId>{data($e/ancestor::department/@id)}</departmentId>
+      <manager managerId="{data($m/@id)}">
+        <lastName>{data($m/lastname)}</lastName>
+        <departmentId>{data($m/ancestor::department/@id)}</departmentId>
+      </manager>
+    </employee>
 }</Result_c_XQuery>
