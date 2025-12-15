@@ -1,4 +1,5 @@
 *.zip
 *.idea
+*.vscode
 ifs74_ue4/.test.xml
 ifs74_ue5/BaseX120.jar
